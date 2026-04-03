@@ -61,3 +61,44 @@ def search(request):
         
     except requests.exceptions.RequestException as e:
         return Response({"error": "Failed to communicate with TMDb.", "details": str(e)}, status=500)
+    
+@api_view(['GET'])
+def popular(request):
+    api_key = os.environ.get('tmdb_api_key')
+    
+    # TMDb Popular Movies Endpoint
+    url = "https://api.themoviedb.org/3/movie/popular"
+    
+    # Notice we don't need the 'query' parameter anymore
+    params = {
+        "api_key": api_key,
+        "language": "en-US", 
+        "page": 1
+    }
+    
+    try:
+        # Make the request to TMDb
+        response = requests.get(url, params=params)
+        response.raise_for_status() 
+        data = response.json()
+        
+        movies = []
+        if "results" in data:
+            for item in data["results"]:
+                poster_path = item.get("poster_path")
+                cover_image = f"https://image.tmdb.org/t/p/w500{poster_path}" if poster_path else None
+                
+                release_date = item.get("release_date", "")
+                production_year = release_date.split("-")[0] if release_date else "N/A"
+                
+                movies.append({
+                    "name": item.get("title"),
+                    "production_year": production_year,
+                    "rating": item.get("vote_average"), 
+                    "cover_image": cover_image
+                })
+        
+        return Response({"results": movies})
+        
+    except requests.exceptions.RequestException as e:
+        return Response({"error": "Failed to fetch popular movies from TMDb.", "details": str(e)}, status=500)
