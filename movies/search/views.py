@@ -47,11 +47,12 @@ def search(request):
                 
 
                 movies.append({
+                    "movie_id": item.get("id"),
                     "name": item.get("title"),
                     "production_year": production_year,
                     "rating": item.get("vote_average"), 
                     "cover_image": cover_image,
-                    "overview": item.get("overview")
+                    "overview": item.get("overview"),
                 })
         
 
