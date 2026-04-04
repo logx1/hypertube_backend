@@ -50,7 +50,8 @@ def search(request):
                     "name": item.get("title"),
                     "production_year": production_year,
                     "rating": item.get("vote_average"), 
-                    "cover_image": cover_image
+                    "cover_image": cover_image,
+                    "overview": item.get("overview")
                 })
         
 
@@ -73,7 +74,8 @@ def popular(request):
     params = {
         "api_key": api_key,
         "language": "en-US", 
-        "page": 1
+        "page": 1,
+        "include_adult": "false"
     }
     
     try:
