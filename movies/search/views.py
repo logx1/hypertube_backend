@@ -94,6 +94,7 @@ def popular(request):
                 production_year = release_date.split("-")[0] if release_date else "N/A"
                 
                 movies.append({
+                    "movie_id": item.get("id"),
                     "name": item.get("title"),
                     "production_year": production_year,
                     "rating": item.get("vote_average"), 
