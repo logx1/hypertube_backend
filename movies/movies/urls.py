@@ -16,11 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from django.http import HttpResponse
-
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('search/', include('search.urls'), name='search'),
+    path('stream/', include('stream.urls'), name='stream'),
 ]
