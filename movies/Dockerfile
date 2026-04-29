@@ -12,7 +12,7 @@ CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
 # CMD ["uvicorn", "movies.asgi:application", "--host", "0.0.0.0", "--port", "8000"]
 
-# CMD ["uvicorn","movies.asgi:application","--host", "0.0.0.0","--port", "8000","--workers", "4", "--reload","--log-level", "info","--timeout-keep-alive", "30","--limit-concurrency", "100","--limit-max-requests", "1000"]
+CMD ["uvicorn","movies.asgi:application","--host", "0.0.0.0","--port", "8000","--workers", "4", "--reload","--log-level", "info","--timeout-keep-alive", "30","--limit-concurrency", "100","--limit-max-requests", "1000"]
 
 # CMD [
 #   "uvicorn",
