@@ -22,4 +22,6 @@ RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
-CMD ["bin/rails", "server", "-b", "0.0.0.0", "-p", "8001"]
+# CMD ["bin/rails", "server", "-b", "0.0.0.0", "-p", "8001"]
+
+CMD ["bash", "-c", "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0 -p 8001"]

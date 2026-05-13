@@ -3,9 +3,11 @@ services:
     image: nginx:latest
     container_name: nginx
     ports:
-      - "80:80"
+      # - "80:80"
+      - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
     depends_on:
       - movies
       - rails
@@ -16,8 +18,8 @@ services:
     container_name: backend
     build:
       context: ./movies
-    ports:
-      - "8000:8000"
+    # ports:
+      # - "8000:8000"
     volumes:
       - ./:/app
     stdin_open: true
@@ -30,8 +32,8 @@ services:
 
   rails:
     build: ./auth
-    ports:
-      - "8001:8001"
+    # ports:
+      # - "8001:8001"
     volumes:
       - ./auth:/app
     environment:
