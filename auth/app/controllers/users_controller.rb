@@ -63,7 +63,7 @@ class UsersController < ApplicationController
       same_site: :lax,
       secure: false
     }
-    redirect_to "http://localhost:3000", allow_other_host: true
+    redirect_to "http://localhost:443", allow_other_host: true
   end
 
 

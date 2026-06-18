@@ -73,7 +73,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'movies.wsgi.application'
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
+    "http://localhost:443",
 ]
 
 # Database
