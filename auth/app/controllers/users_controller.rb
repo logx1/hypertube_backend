@@ -47,7 +47,7 @@ class UsersController < ApplicationController
     if user.imageUrl.nil?
       user.update(imageUrl: auth.info.image)
     end
-    redirect_to "http://127.0.0.1:8001/set_cookies?token=#{token}", allow_other_host: true
+    redirect_to "https://localhost/auth/set_cookies?token=#{token}", allow_other_host: true
   end
 
 
@@ -59,11 +59,10 @@ class UsersController < ApplicationController
     cookies["token"] = {
       value: token,
       httponly: true,
-      domain: "localhost",
-      same_site: :lax,
-      secure: false
+      same_site: :none,
+      secure: true
     }
-    redirect_to "http://localhost:443", allow_other_host: true
+    redirect_to "http://localhost:3000", allow_other_host: true
   end
 
 
@@ -106,7 +105,7 @@ class UsersController < ApplicationController
     if user.imageUrl.nil?
       user.update(imageUrl: auth.info.image)
     end
-    redirect_to "http://127.0.0.1:8001/set_cookies?token=#{token}", allow_other_host: true
+    redirect_to "https://localhost/auth/set_cookies?token=#{token}", allow_other_host: true
   end
 
 
@@ -150,7 +149,7 @@ class UsersController < ApplicationController
       user.update(imageUrl: auth.extra.raw_info.image.link)
     end
 
-    redirect_to "http://127.0.0.1:8001/set_cookies?token=#{token}", allow_other_host: true
+    redirect_to "https://localhost/auth/set_cookies?token=#{token}", allow_other_host: true
   end
 
 
