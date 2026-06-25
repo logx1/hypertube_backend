@@ -1,14 +1,26 @@
 class UsersController < ApplicationController
-  skip_before_action :authenticate, only: [ :create, :callback_github, :callback_google, :intra_callback, :set_cookies ]
+  skip_before_action :authenticate, only: [ :create, :callback_github, :callback_google, :intra_callback, :set_cookies, :forgot_password ]
 
-
+  
 ################################################################################################################################################################
   
-
   def index
     render json: { message: "Auth endpoint working" }
   end
 
+################################################################################################################################################################
+
+def update_user_info
+    token = request.headers['Authorization']&.split(' ')&.last
+    user_id = JsonWebToken.decode(token)
+  
+    @user = User.find(user_id['user_id'])
+      if @user.update(update_params.compact_blank)
+        render json: { Success: "User Data Updated" }, status: :ok
+      else
+        render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
+      end
+  end
 
 ################################################################################################################################################################
   
@@ -58,7 +70,7 @@ class UsersController < ApplicationController
     token = params[:token]
     cookies["token"] = {
       value: token,
-      httponly: true,
+      httponly: false,
       same_site: :none,
       secure: true
     }
@@ -169,11 +181,31 @@ class UsersController < ApplicationController
 
 
 ################################################################################################################################################################
+
+  def forgot_password
+    email = params[:email].downcase
+
+    if email.blank?
+      return render json: { error: "Email not provided" }, status: :unprocessable_entity
+    end
+
+    user = User.find_by(email: email)
+
+    if user.present?
+      UserMailer.password_reset(user).deliver_now!
+    end
+
+    render json: { message: "If your email exists in our system, you will receive a reset link.", email: email }, status: :ok
+  end
+
+################################################################################################################################################################
   
 
   def me
     render json: { json: @current_user.as_json(only: [:id, :email, :password_digest, :language]),  message: "ok" }
   end
+
+  
   private
 
   def generate_username
@@ -192,3 +224,9 @@ class UsersController < ApplicationController
   end
 
 end
+
+################################################################################################################################################################
+
+def update_params
+    request = params.require(:auth).permit(:username, :last_name, :first_name, :email, :imageUrl, :language, :password)
+  end
