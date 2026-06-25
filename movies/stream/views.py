@@ -5,67 +5,87 @@ import requests
 import libtorrent as lt
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+import os
+from django.http import StreamingHttpResponse, Http404
+
+
+from torrentp import TorrentDownloader
 
 @api_view(['GET'])
 def search_movies(request):
-    movie_title = request.query_params.get('title', '')
+    """
+    Searches Archive.org for movies and returns titles, years, descriptions,
+    and multiple poster options for quick frontend verification.
+    """
+    # 1. Extract and sanitize input query
+    movie_title = request.query_params.get('title', '').strip()
     if not movie_title:
-        return Response({"error": "Provide a title"}, status=400)
+        return Response({"error": "Provide a title parameters (e.g., ?title=The Matrix)"}, status=400)
 
     search_url = "https://archive.org/advancedsearch.php"
+    
+    # Target popular media files first to maximize high-quality poster matching
     params = {
-        'q': f'title:({movie_title}) AND mediatype:(movies)',
-        'fl[]': 'identifier,title',
+        'q': f'{movie_title} AND mediatype:(movies)',
+        'fl[]': ['identifier', 'title', 'description', 'year'],
+        'sort[]': 'downloads desc',
         'output': 'json',
-        'rows': 10 
+        'rows': 12  # Ideal response count for a 2, 3, or 4-column responsive frontend grid
     }
     
     try:
-        response = requests.get(search_url, params=params)
+        # Single network hop to the search index (extremely fast execution)
+        response = requests.get(search_url, params=params, timeout=8)
+        response.raise_for_status()
         items = response.json().get('response', {}).get('docs', [])
+        
+        # Fallback: Broaden lookup bounds if the strict media filter returned zero items
+        if not items:
+            params['q'] = f'{movie_title}'
+            response = requests.get(search_url, params=params, timeout=8)
+            items = response.json().get('response', {}).get('docs', [])
 
         results = []
+        
         for item in items:
-            ident = item['identifier']
-            meta_url = f"https://archive.org/metadata/{ident}"
-            meta_resp = requests.get(meta_url).json()
+            ident = item.get('identifier')
+            title = item.get('title')
             
-            files = meta_resp.get('files', [])
-            
-            # 1. FIND VIDEOS
-            valid_video_formats = ['MPEG4', 'H.264', 'Matroska', 'h.264']
-            video_list = [
-                {"file_name": f['name'], "format": f.get('format'), "size": f.get('size')}
-                for f in files 
-                if f.get('format') in valid_video_formats or f['name'].endswith(('.mp4', '.mkv'))
-            ]
+            # Skip invalid structural references
+            if not ident or not title:
+                continue
 
-            # 2. FIND IMAGES (The Thumbnail/Poster)
-            # We look for common image formats or files tagged as 'Thumbnail'
-            image_url = None
-            for f in files:
-                if f.get('format') in ['JPEG', 'PNG', 'JSON Thumb']:
-                    image_url = f"https://archive.org/download/{ident}/{f['name']}"
-                    break # Take the first good image we find
+            # Standardize year and description strings
+            year = item.get('year', 'Unknown Year')
+            description = item.get('description', '')
             
-            # Fallback: Archive.org usually has a default thumbnail if no specific image is found
-            if not image_url:
-                image_url = f"https://archive.org/services/img/{ident}"
+            if isinstance(description, list):
+                description = " ".join(description)
+            clean_desc = (description[:120] + '...') if len(description) > 120 else description
 
-            if video_list:
-                results.append({
-                    "title": item['title'],
-                    "identifier": ident,
-                    "poster_image": image_url,
-                    "videos": video_list,
-                    "torrent_url": f"https://archive.org/download/{ident}/{ident}_archive.torrent"
-                })
+            # Construct direct static image endpoints
+            # Format A uses the internal service handler (requires trailing slash)
+            primary_poster = f"https://archive.org/services/img/{ident}/"
+            # Format B bypasses the service layer to point directly to standard generated filesystem thumbs
+            backup_poster = f"https://archive.org/download/{ident}/__ia_thumb.jpg"
+
+            results.append({
+                "title": title,
+                "year": year,
+                "identifier": ident,
+                "description": clean_desc,
+                "verification_image": primary_poster,
+                "backup_image": backup_poster,
+                "archive_url": f"https://archive.org/details/{ident}",
+                "torrent_url": f"https://archive.org/download/{ident}/{ident}_archive.torrent"
+            })
 
         return Response(results)
 
+    except requests.exceptions.RequestException as e:
+        return Response({"error": f"Failed to communicate with Archive.org: {str(e)}"}, status=502)
     except Exception as e:
-        return Response({"error": str(e)}, status=500)
-    
+        return Response({"error": f"Internal server error: {str(e)}"}, status=500)
 
 import libtorrent as lt
 import os
@@ -124,3 +144,71 @@ def start_movie_download(request):
         "message": "Download initiated in background.",
         "stream_url": f"/media/movies/{identifier}/" # You'll need to find the exact filename
     })
+
+
+
+
+# watch 
+@api_view(['GET'])
+def stream_movie(request):
+    # Hardcoded path to your test video file
+    file_path = './video_test/test_video.mp4'
+    if not os.path.exists(file_path):
+        raise Http404("Movie not found")
+
+    def file_iterator(path, chunk_size=8192):
+        with open(path, 'rb') as f:
+            while chunk := f.read(chunk_size):
+                yield chunk
+
+    response = StreamingHttpResponse(file_iterator(file_path), content_type='video/mp4')
+    response['Content-Disposition'] = 'inline; filename="test_video.mp4"'
+    response['Content-Length'] = os.path.getsize(file_path)
+    return response
+
+
+
+
+
+# Define where you want to save downloaded movies on your server
+DOWNLOAD_DIR = os.path.join(os.path.expanduser('~'), 'goinfre', 'ArchiveMovies')
+os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+
+@api_view(['POST'])
+def start_torrent_download(request):
+    """
+    Takes a torrent_url, downloads the metadata, and starts 
+    downloading the video file to the server.
+    """
+    torrent_url = request.data.get('torrent_url')
+    
+    if not torrent_url:
+        return Response({"error": "Missing 'torrent_url' in request body."}, status=400)
+    
+    try:
+        # 1. Download the temporary .torrent file from Archive.org
+        temp_torrent_path = os.path.join(DOWNLOAD_DIR, "temp_movie.torrent")
+        
+        response = requests.get(torrent_url, timeout=15)
+        response.raise_for_status()
+        
+        with open(temp_torrent_path, 'wb') as f:
+            f.write(response.content)
+            
+        # 2. Initialize the torrent downloader
+        downloader = TorrentDownloader(temp_torrent_path, DOWNLOAD_DIR)
+        
+        # 3. Start the download in a background thread 
+        # (This prevents your API from freezing or timing out)
+        downloader.start_download()
+        
+        return Response({
+            "message": "Download started successfully in the background.",
+            "save_path": DOWNLOAD_DIR,
+            "torrent_source": torrent_url
+        }, status=202)
+
+    except requests.exceptions.RequestException as e:
+        return Response({"error": f"Failed to fetch the torrent file: {str(e)}"}, status=400)
+    except Exception as e:
+        return Response({"error": f"Internal download error: {str(e)}"}, status=500)

@@ -213,6 +213,7 @@ __marimo__/
 media/
 .DS_Store
 certs/
+*.mp4
 
 
 # mkdir certs
