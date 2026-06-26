@@ -1,4 +1,5 @@
 asgiref==3.11.1
+asyncclick==8.3.0.7
 certifi==2026.2.25
 charset-normalizer==3.4.7
 click==8.3.2
@@ -8,7 +9,12 @@ djangorestframework==3.17.1
 h11==0.16.0
 idna==3.11
 libtorrent==2.0.11
+markdown-it-py==4.2.0
+mdurl==0.1.2
+Pygments==2.20.0
 requests==2.33.1
+rich==15.0.0
 sqlparse==0.5.5
+torrentp==0.2.7
 urllib3==2.6.3
 uvicorn==0.44.0
