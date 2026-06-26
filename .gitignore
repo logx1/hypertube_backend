@@ -214,6 +214,8 @@ media/
 .DS_Store
 certs/
 *.mp4
+qbittorrent/
+jackett/
 
 
 # mkdir certs
