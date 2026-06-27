@@ -216,6 +216,8 @@ certs/
 *.mp4
 qbittorrent/
 jackett/
+video_test/
+vvv.py
 
 
 # mkdir certs
