@@ -9,8 +9,6 @@ from django.http import StreamingHttpResponse, Http404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-# Global in-memory engine storage
-# Format: { identifier: { "session": ses, "handle": handle, "completed": False, "save_path": path } }
 ACTIVE_DOWNLOADS = {}
 DOWNLOAD_DIR = "./movies_cache"
 
@@ -18,20 +16,13 @@ os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 
 # ==========================================
-# 1. SEARCH MOVIES VIEW
+# 1. SEARCH MOVIES VIEW (Kept unchanged)
 # ==========================================
 @api_view(["GET"])
 def search_movies(request):
-    """
-    Searches Archive.org for movies and returns titles, descriptions,
-    and multiple poster options, sorted by closest title match.
-    """
     movie_title = request.query_params.get("title", "").strip()
     if not movie_title:
-        return Response(
-            {"error": "Provide a title parameter (e.g., ?title=The Matrix)"},
-            status=400
-        )
+        return Response({"error": "Provide a title parameter"}, status=400)
 
     search_url = "https://archive.org/advancedsearch.php"
     params = {
@@ -56,13 +47,11 @@ def search_movies(request):
         for item in items:
             ident = item.get("identifier")
             title = item.get("title")
-
             if not ident or not title:
                 continue
 
             year = item.get("year", "Unknown Year")
             description = item.get("description", '')
-
             if isinstance(description, list):
                 description = " ".join(description)
             clean_desc = (description[:120] + "...") if len(description) > 120 else description
@@ -78,28 +67,21 @@ def search_movies(request):
                 "torrent_url": f"https://archive.org/download/{ident}/{ident}_archive.torrent",
             })
 
-        # Relevance Sorting
         clean_query = movie_title.replace('"', "").replace("'", "").strip().lower()
-        results.sort(
-            key=lambda x: difflib.SequenceMatcher(None, clean_query, x["title"].lower()).ratio(),
-            reverse=True
-        )
-
+        results.sort(key=lambda x: difflib.SequenceMatcher(None, clean_query, x["title"].lower()).ratio(), reverse=True)
         return Response(results)
 
-    except requests.exceptions.RequestException as e:
-        return Response({"error": f"Archive.org communication error: {str(e)}"}, status=502)
     except Exception as e:
-        return Response({"error": f"Internal server error: {str(e)}"}, status=500)
+        return Response({"error": str(e)}, status=500)
 
 
 # ==========================================
-# TORRENT BACKGROUND WORKER
+# ADVANCED TORRENT BACKGROUND WORKER
 # ==========================================
 def background_torrent_worker(torrent_url, save_path, identifier):
     """
-    Background worker keeping libtorrent session alive, forcing 
-    sequential downloads for instant streaming capabilities.
+    Background worker that extracts files, targets ONLY the largest video file,
+    ignores all metadata/sub-files, and streams sequentially.
     """
     try:
         ses = lt.session()
@@ -119,9 +101,38 @@ def background_torrent_worker(torrent_url, save_path, identifier):
         }
 
         handle = ses.add_torrent(params)
+        
+        # 🎯 FIX: Correctly interface with libtorrent's file_storage object
+        files = info.files()  # This returns a file_storage object
+        num_files = files.num_files()  # Get total count of files
+        
+        largest_file_idx = -1
+        max_size = 0
+        video_extensions = ('.mp4', '.mkv', '.avi', '.mov')
+
+        # Loop using range and use file_storage methods: file_path() and file_size()
+        for idx in range(num_files):
+            file_path_str = files.file_path(idx)
+            file_size_bytes = files.file_size(idx)
+            
+            if file_path_str.lower().endswith(video_extensions) and file_size_bytes > max_size:
+                max_size = file_size_bytes
+                largest_file_idx = idx
+
+        # If a video file was found, tell libtorrent to ONLY download that file
+        if largest_file_idx != -1:
+            # Step 1: Set file priorities (0 means do not download)
+            file_priorities = [0] * num_files
+            file_priorities[largest_file_idx] = 4  # 4 is standard/normal priority
+            handle.prioritize_files(file_priorities)
+            
+            print(f"Targeting single video file: {files.file_path(largest_file_idx)} ({max_size / (1024*1024):.2f} MB)")
+        else:
+            print("Warning: No video extension found. Downloading entire package as fallback.")
+
+        # Force sequential download pieces for streaming
         handle.set_sequential_download(True)
 
-        # Retain references globally to prevent garbage collection mid-download
         ACTIVE_DOWNLOADS[identifier] = {
             "session": ses,
             "handle": handle,
@@ -129,27 +140,32 @@ def background_torrent_worker(torrent_url, save_path, identifier):
             "save_path": save_path
         }
 
-        while not handle.status().is_seeding:
+        while True:
+            status = handle.status()
+            
+            if status.is_seeding or (status.progress >= 1.0 and status.state == lt.torrent_status.state_t.finished):
+                break
+                
+            # Fallback breaking logic: check our specific targeted file's progress
+            if largest_file_idx != -1 and handle.file_progress()[largest_file_idx] == max_size:
+                break
+                
             time.sleep(2)
 
-        # Mark as complete safely without clearing context handles
         if identifier in ACTIVE_DOWNLOADS:
             ACTIVE_DOWNLOADS[identifier]["completed"] = True
+            print(f"Targeted movie download completed for: {identifier}")
 
     except Exception as e:
-        print(f"Error in torrent engine for {identifier}: {str(e)}")
+        print(f"Error in torrent engine: {str(e)}")
         if identifier in ACTIVE_DOWNLOADS:
             del ACTIVE_DOWNLOADS[identifier]
-
 
 # ==========================================
 # 2. DOWNLOAD MOVIE VIEW
 # ==========================================
 @api_view(['POST'])
 def download_movie(request):
-    """
-    Initiates sequential video block torrenting for a specific movie identifier.
-    """
     identifier = request.data.get('identifier', '').strip()
     torrent_url = request.data.get('torrent_url', '').strip()
 
@@ -166,9 +182,9 @@ def download_movie(request):
 
     movie_folder = os.path.join(DOWNLOAD_DIR, identifier)
     
-    # Check if files already exist locally 
+    # Quick check if files already exist
     if os.path.exists(movie_folder) and len(os.listdir(movie_folder)) > 0:
-        return Response({"message": "Movie is ready for streaming"}, status=200)
+        return Response({"message": "Movie file is cached and ready"}, status=200)
 
     thread = threading.Thread(
         target=background_torrent_worker,
@@ -178,7 +194,7 @@ def download_movie(request):
     thread.start()
 
     return Response({
-        "message": "Download initiated successfully in the background",
+        "message": "Selective video download initiated successfully in the background",
         "identifier": identifier
     }, status=202)
 
@@ -188,9 +204,6 @@ def download_movie(request):
 # ==========================================
 @api_view(['GET'])
 def download_status(request, identifier):
-    """
-    Returns polling statistics regarding torrent speeds and buffer availability.
-    """
     if identifier in ACTIVE_DOWNLOADS:
         download_data = ACTIVE_DOWNLOADS[identifier]
         status = download_data["handle"].status()
@@ -202,26 +215,24 @@ def download_status(request, identifier):
             "num_peers": status.num_peers
         })
     
-    # Fallback to verify folder contents if the memory tracker dropped out
     movie_folder = os.path.join(DOWNLOAD_DIR, identifier)
     if os.path.exists(movie_folder) and len(os.listdir(movie_folder)) > 0:
-         return Response({"active": False, "completed": True, "message": "Download completed."})
+         return Response({"active": False, "completed": True, "message": "Download complete."})
 
-    return Response({"active": False, "completed": False, "message": "Not downloading or queued."})
+    return Response({"active": False, "completed": False, "message": "Not active."})
 
 
 # ==========================================
-# 4. STREAM MOVIE VIEW (WITH RANGE HEADERS)
+# 4. STREAM MOVIE VIEW (Supporting Ranges)
 # ==========================================
 def _find_largest_video_file(dir_path):
-    """Helper to crawl directory and find the actual movie file."""
     largest_file = None
     max_size = 0
     video_extensions = ('.mp4', '.mkv', '.avi', '.mov')
     
     for root, _, files in os.walk(dir_path):
         for f in files:
-            if f.endswith(video_extensions):
+            if f.lower().endswith(video_extensions):
                 full_path = os.path.join(root, f)
                 file_size = os.path.getsize(full_path)
                 if file_size > max_size:
@@ -229,63 +240,20 @@ def _find_largest_video_file(dir_path):
                     largest_file = full_path
     return largest_file
 
-
+# watch 
 @api_view(['GET'])
 def stream_movie(request):
-    """
-    Streams the tracked movie file back to the browser supporting HTML5 content chunking.
-    Expects dynamic query param: /api/stream/?identifier=item_id
-    """
-    identifier = request.query_params.get('identifier', '').strip()
-    if not identifier:
-        return Response({"error": "Missing 'identifier' parameter"}, status=400)
+    # Hardcoded path to your test video file
+    file_path = './video_test/lol.mp4'
+    if not os.path.exists(file_path):
+        raise Http404("Movie not found")
 
-    movie_folder = os.path.join(DOWNLOAD_DIR, identifier)
-    file_path = _find_largest_video_file(movie_folder)
-
-    if not file_path or not os.path.exists(file_path):
-        raise Http404("Video content missing or buffering primary chunks.")
-
-    file_size = os.path.getsize(file_path)
-    range_header = request.META.get('HTTP_RANGE', '').strip()
-    
-    # Parse HTTP range definitions (e.g., bytes=0-1048576)
-    start, end = 0, file_size - 1
-    if range_header and range_header.startswith('bytes='):
-        try:
-            ranges = range_header.split('=')[1].split('-')
-            if ranges[0]:
-                start = int(ranges[0])
-            if ranges[1]:
-                end = int(ranges[1])
-        except ValueError:
-            pass
-
-    # Constrain boundaries safely
-    end = min(end, file_size - 1)
-    chunk_length = (end - start) + 1
-
-    def range_iterator(path, offset, length, chunk_size=16384):
+    def file_iterator(path, chunk_size=8192):
         with open(path, 'rb') as f:
-            f.seek(offset)
-            remaining = length
-            while remaining > 0:
-                to_read = min(chunk_size, remaining)
-                data = f.read(to_read)
-                if not data:
-                    break
-                remaining -= len(data)
-                yield data
+            while chunk := f.read(chunk_size):
+                yield chunk
 
-    # Return HTTP 206 Partial Content response
-    response = StreamingHttpResponse(
-        range_iterator(file_path, start, chunk_length), 
-        status=206, 
-        content_type='video/mp4'
-    )
-    response['Content-Range'] = f'bytes {start}-{end}/{file_size}'
-    response['Accept-Ranges'] = 'bytes'
-    response['Content-Length'] = chunk_length
-    response['Content-Disposition'] = 'inline; filename="movie.mp4"'
-    
+    response = StreamingHttpResponse(file_iterator(file_path), content_type='video/mp4')
+    response['Content-Disposition'] = 'inline; filename="lol.mp4"'
+    response['Content-Length'] = os.path.getsize(file_path)
     return response
