@@ -54,35 +54,35 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 
-  qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:latest
-    container_name: qbittorrent
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
-      - WEBUI_PORT=8080
-      - QBITTORRENT_WEBUI_USERNAME=admin
-      - QBITTORRENT_WEBUI_PASSWORD=adminadmin
-      - INSTALL_PYTHON3=true
-    volumes:
-      - ./qbittorrent/config:/config
-      - ./movies/video_test:/downloads
-    ports:
-      - 8080:8080
-      - 6881:6881
-      - 6881:6881/udp
-    restart: unless-stopped
+  # qbittorrent:
+  #   image: lscr.io/linuxserver/qbittorrent:latest
+  #   container_name: qbittorrent
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=Etc/UTC
+  #     - WEBUI_PORT=8080
+  #     - QBITTORRENT_WEBUI_USERNAME=admin
+  #     - QBITTORRENT_WEBUI_PASSWORD=adminadmin
+  #     - INSTALL_PYTHON3=true
+  #   volumes:
+  #     - ./qbittorrent/config:/config
+  #     - ./movies/video_test:/downloads
+  #   ports:
+  #     - 8080:8080
+  #     - 6881:6881
+  #     - 6881:6881/udp
+  #   restart: unless-stopped
 
-  jackett:
-    image: lscr.io/linuxserver/jackett:latest
-    container_name: jackett
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
-    volumes:
-      - ./jackett/config:/config
-    ports:
-      - "9117:9117"
-    restart: unless-stopped
+  # jackett:
+  #   image: lscr.io/linuxserver/jackett:latest
+  #   container_name: jackett
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=Etc/UTC
+  #   volumes:
+  #     - ./jackett/config:/config
+  #   ports:
+  #     - "9117:9117"
+  #   restart: unless-stopped
