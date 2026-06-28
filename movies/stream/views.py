@@ -8,6 +8,7 @@ import libtorrent as lt
 from django.http import StreamingHttpResponse, Http404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+import re
 
 ACTIVE_DOWNLOADS = {}
 DOWNLOAD_DIR = "./movies_cache"
@@ -222,38 +223,122 @@ def download_status(request, identifier):
     return Response({"active": False, "completed": False, "message": "Not active."})
 
 
+
+
+
+
+
+
+
+
+
+
+
 # ==========================================
 # 4. STREAM MOVIE VIEW (Supporting Ranges)
 # ==========================================
-def _find_largest_video_file(dir_path):
-    largest_file = None
-    max_size = 0
-    video_extensions = ('.mp4', '.mkv', '.avi', '.mov')
-    
-    for root, _, files in os.walk(dir_path):
-        for f in files:
-            if f.lower().endswith(video_extensions):
-                full_path = os.path.join(root, f)
-                file_size = os.path.getsize(full_path)
-                if file_size > max_size:
-                    max_size = file_size
-                    largest_file = full_path
-    return largest_file
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # watch 
+
 @api_view(['GET'])
 def stream_movie(request):
-    # Hardcoded path to your test video file
     file_path = './video_test/lol.mp4'
     if not os.path.exists(file_path):
         raise Http404("Movie not found")
 
-    def file_iterator(path, chunk_size=8192):
-        with open(path, 'rb') as f:
-            while chunk := f.read(chunk_size):
-                yield chunk
+    file_size = os.path.getsize(file_path)
+    range_header = request.META.get('HTTP_RANGE', '').strip()
+    
+    start = 0
+    end = file_size - 1
+    status_code = 200
 
-    response = StreamingHttpResponse(file_iterator(file_path), content_type='video/mp4')
+    if range_header:
+        match = re.match(r'bytes=(\d+)-(\d*)', range_header)
+        if match:
+            start = int(match.group(1))
+            if match.group(2):
+                end = int(match.group(2))
+            status_code = 206
+
+    content_length = end - start + 1
+
+    # 1. Generator definition (nested inside the view)
+    def file_iterator(path, offset, length, chunk_size=8192):
+        with open(path, 'rb') as f:
+            f.seek(offset)
+            remaining = length
+            while remaining > 0:
+                to_read = min(chunk_size, remaining)
+                chunk = f.read(to_read)
+                if not chunk:
+                    break
+                yield chunk
+                remaining -= len(chunk)
+
+    # 2. Create the response object
+    response = StreamingHttpResponse(
+        file_iterator(file_path, start, content_length), 
+        status=status_code, 
+        content_type='video/mp4'
+    )
+    
+    response['Accept-Ranges'] = 'bytes'
+    response['Content-Length'] = str(content_length)
+    response['Content-Range'] = f'bytes {start}-{end}/{file_size}'
     response['Content-Disposition'] = 'inline; filename="lol.mp4"'
-    response['Content-Length'] = os.path.getsize(file_path)
+    
+    # 3. CRITICAL: This must be aligned here so the view returns it!
     return response
+    file_path = './video_test/lol.mp4'
+    if not os.path.exists(file_path):
+        raise Http404("Movie not found")
+
+    file_size = os.path.getsize(file_path)
+    range_header = request.META.get('HTTP_RANGE', '').strip()
+    
+    # Default values for the whole file
+    start = 0
+    end = file_size - 1
+    status_code = 200
+
+    # Check if the browser is requesting a specific chunk (Range: bytes=start-end)
+    if range_header:
+        match = re.match(r'bytes=(\d+)-(\d*)', range_header)
+        if match:
+            start = int(match.group(1))
+            if match.group(2):
+                end = int(match.group(2))
+            status_code = 206  # 206 Partial Content
+
+    content_length = end - start + 1
+
+    # Generator to read only the requested chunk
+   # Generator to read only the requested chunk
+    def file_iterator(path, offset, length, chunk_size=8192):
+        with open(path, 'rb') as f:
+            f.seek(offset)
+            remaining = length
+            while remaining > 0:
+                to_read = min(chunk_size, remaining)
+                chunk = f.read(to_read)
+                if not chunk:
+                    break
+                yield chunk
+                remaining -= len(chunk)
