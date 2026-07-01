@@ -202,7 +202,7 @@ def update_user_info
   
 
   def me
-    render json: { json: @current_user.as_json(only: [:id, :email, :password_digest, :language]),  message: "ok" }
+    render json: { json: @current_user.as_json(only: [:id, :email, :last_name, :first_name, :language]),  message: "ok" }
   end
 
   
