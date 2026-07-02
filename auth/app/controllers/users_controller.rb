@@ -243,6 +243,26 @@ end
 
     render json: { message: "If your email exists in our system, you will receive a reset link.", email: email }, status: :ok
   end
+################################################################################################################################################################
+
+  def update_forgot_password
+    token = request.headers['Authorization']&.split(' ')&.last
+    user_id = JsonWebToken.decode(token)['user_id']
+    @user = User.find(user_id)
+
+    if update_forgot[:new_password].eql?(update_forgot[:new_password_confirmation]) && update_forgot[:new_password].length > 7
+        if @user&.authenticate(update_forgot[:new_password])
+          render json: { errors: "New Password Should be Different Than Your Current Password!" }, status: :unprocessable_entity
+        elsif @user.update!({ password: update_forgot[:new_password], password_confirmation: update_forgot[:new_password_confirmation] })
+          render json: { errors: "Password Updated!" }, status: :ok
+        else
+          render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
+        end
+
+    else
+      render json: { errors: "Wrong Password or Short NewPassword" }, status: :unprocessable_entity
+    end
+  end
 
 ################################################################################################################################################################
   
@@ -281,6 +301,10 @@ end
 
   def update_password
     request = params.require(:auth).permit(:new_password, :password, :new_password_confirmation)
+  end
+
+  def update_forgot
+    request = params.require(:auth).permit(:new_password, :new_password_confirmation)
   end
 
 end
