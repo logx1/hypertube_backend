@@ -217,6 +217,7 @@ certs/
 qbittorrent/
 jackett/
 video_test/
+migrations/
 vvv.py
 
 
