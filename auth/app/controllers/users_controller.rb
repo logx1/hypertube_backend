@@ -62,7 +62,7 @@ def update_user_password
       else
         render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
       end
-    
+
   else
     render json: { errors: "Wrong Password or Short NewPassword" }, status: :unprocessable_entity
   end
@@ -248,7 +248,7 @@ end
   
 
   def me
-    render json: { json: @current_user.as_json(only: [:id, :email, :last_name, :first_name, :language]),  message: "ok" }
+    render json: { json: @current_user.as_json(only: [:id, :username, :last_name, :first_name, :language, :email]),  message: "ok" }
   end
 
   
