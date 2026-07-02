@@ -10,17 +10,63 @@ class UsersController < ApplicationController
 
 ################################################################################################################################################################
 
-def update_user_info
+  def update_user_info
     token = request.headers['Authorization']&.split(' ')&.last
-    user_id = JsonWebToken.decode(token)
-  
-    @user = User.find(user_id['user_id'])
-      if @user.update(update_params.compact_blank)
+    user_id = JsonWebToken.decode(token)['user_id']
+    @user = User.find(user_id)
+      if @user.update(update_params.compact_blank) and !update_params.empty?
         render json: { Success: "User Data Updated" }, status: :ok
+      elsif update_params.empty?
+        render json: { errors: "Cannot Change That Field or Wrong Request" }, status: :unprocessable_entity
       else
         render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
       end
   end
+
+################################################################################################################################################################
+
+  def update_user_email
+
+    token = request.headers['Authorization']&.split(' ')&.last
+    user_id = JsonWebToken.decode(token)['user_id']
+    @user = User.find(user_id)
+    authenticate_user = @user&.authenticate(update_email[:password])
+
+    if update_email[:password].eql?(update_email[:password_confirmation]) && authenticate_user && update_email[:email].match("^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]+$")
+
+      if @user.update({ email: update_email[:email] })
+        render json: { errors: "Email Updated!" }, status: :ok
+      else
+        render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
+      end
+
+    else
+      render json: { errors: "Not Valid Email or Wrong Password" }, status: :unprocessable_entity
+    end
+
+  end
+
+################################################################################################################################################################
+
+def update_user_password
+  token = request.headers['Authorization']&.split(' ')&.last
+  user_id = JsonWebToken.decode(token)['user_id']
+  @user = User.find(user_id)
+  authenticate_user = @user&.authenticate(update_password[:password])
+
+  if update_password[:new_password].eql?(update_password[:new_password_confirmation]) && authenticate_user && update_password[:new_password].length > 7
+    
+    if @user.update!({ password: update_password[:new_password], password_confirmation: update_password[:new_password_confirmation] })
+
+        render json: { errors: "Password Updated!" }, status: :ok
+      else
+        render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
+      end
+    
+  else
+    render json: { errors: "Wrong Password or Short NewPassword" }, status: :unprocessable_entity
+  end
+end
 
 ################################################################################################################################################################
   
@@ -202,7 +248,7 @@ def update_user_info
   
 
   def me
-    render json: { json: @current_user.as_json(only: [:id, :email, :password_digest, :language]),  message: "ok" }
+    render json: { json: @current_user.as_json(only: [:id, :email, :last_name, :first_name, :language]),  message: "ok" }
   end
 
   
@@ -223,10 +269,19 @@ def update_user_info
     request = params.require(:auth).permit(:username, :password, :password_confirmation, :last_name, :first_name, :email)
   end
 
-end
-
 ################################################################################################################################################################
 
-def update_params
-    request = params.require(:auth).permit(:username, :last_name, :first_name, :email, :imageUrl, :language, :password)
+  def update_params
+    request = params.require(:auth).permit(:username, :last_name, :first_name, :imageUrl, :language)
   end
+
+  def update_email
+    request = params.require(:auth).permit(:email, :password, :password_confirmation)
+  end
+
+  def update_password
+    request = params.require(:auth).permit(:new_password, :password, :new_password_confirmation)
+  end
+
+end
+

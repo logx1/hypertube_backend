@@ -11,6 +11,8 @@ Rails.application.routes.draw do
   get "/amine", to: 'users#check_env'
   get "/set_cookies", to: "users#set_cookies"
   get "/check_token", to: "auth#check_token"
-  put "/user/update", to: "users#update_user_info"
+  patch "/user/update", to: "users#update_user_info"
   post "/forgot_password", to: "users#forgot_password"
+  patch "/user/email_update", to: "users#update_user_email"
+  patch "/user/new_password", to: "users#update_user_password"
 end
