@@ -35,7 +35,7 @@ class UsersController < ApplicationController
     if update_email[:password].eql?(update_email[:password_confirmation]) && authenticate_user && update_email[:email].match("^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]+$")
 
       if @user.update({ email: update_email[:email] })
-        render json: { errors: "Success!" }, status: :ok
+        render json: { errors: "Email Updated!" }, status: :ok
       else
         render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
       end
@@ -49,6 +49,24 @@ class UsersController < ApplicationController
 ################################################################################################################################################################
 
 def update_user_password
+  token = request.headers['Authorization']&.split(' ')&.last
+  user_id = JsonWebToken.decode(token)['user_id']
+  @user = User.find(user_id)
+  authenticate_user = @user&.authenticate(update_password[:password])
+
+  if update_password[:new_password].eql?(update_password[:new_password_confirmation]) && authenticate_user && update_password[:new_password].length > 7
+    
+    if @user.update!({ password: update_password[:new_password], password_confirmation: update_password[:new_password_confirmation] })
+
+        render json: { errors: "Password Updated!" }, status: :ok
+      else
+        render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
+      end
+    
+  else
+    render json: { errors: "Wrong Password or Short NewPassword" }, status: :unprocessable_entity
+  end
+end
 
 ################################################################################################################################################################
   
@@ -259,6 +277,10 @@ def update_user_password
 
   def update_email
     request = params.require(:auth).permit(:email, :password, :password_confirmation)
+  end
+
+  def update_password
+    request = params.require(:auth).permit(:new_password, :password, :new_password_confirmation)
   end
 
 end
