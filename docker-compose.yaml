@@ -24,8 +24,10 @@ services:
       - ./:/app
     stdin_open: true
     tty: true
-    env_file:
-      - .env
+    environment:
+      - DB_BACKEND_USER=${DB_BACKEND_USER}
+      - DB_BACKEND_NAME=${DB_BACKEND_NAME}
+      - DB_MOVIES_BACKEND_PASSWORD=${DB_MOVIES_BACKEND_PASSWORD}
   
 
 
@@ -53,6 +55,12 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_BACKEND_USER=${DB_BACKEND_USER}
+      - DB_BACKEND_NAME=${DB_BACKEND_NAME}
+      - DB_MOVIES_BACKEND_PASSWORD=${DB_MOVIES_BACKEND_PASSWORD}
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      
 
   # qbittorrent:
   #   image: lscr.io/linuxserver/qbittorrent:latest
