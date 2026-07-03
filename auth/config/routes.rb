@@ -15,4 +15,5 @@ Rails.application.routes.draw do
   post "/forgot_password", to: "users#forgot_password"
   patch "/user/email_update", to: "users#update_user_email"
   patch "/user/new_password", to: "users#update_user_password"
+  patch "/user/update_password", to: "users#update_forgot_password"
 end
