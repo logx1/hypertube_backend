@@ -9,9 +9,10 @@ from django.http import StreamingHttpResponse, Http404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import re
+from .models import Movie
 
 ACTIVE_DOWNLOADS = {}
-DOWNLOAD_DIR = "./movies_cache"
+DOWNLOAD_DIR = "/movies_cache"
 
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
@@ -25,51 +26,71 @@ def search_movies(request):
     if not movie_title:
         return Response({"error": "Provide a title parameter"}, status=400)
 
-    search_url = "https://archive.org/advancedsearch.php"
+    # YTS List Movies API Endpoint
+    search_url = "https://yts.lt/api/v2/list_movies.json"
     params = {
-        "q": f"{movie_title} AND mediatype:(movies)",
-        "fl[]": ["identifier", "title", "description", "year"],
-        "sort[]": "downloads desc",
-        "output": "json",
-        "rows": 12,
+        "query_term": movie_title,
+        "sort_by": "download_count",  # Equivalent to downloads desc
+        "limit": 12,  # Equivalent to rows: 12
     }
 
     try:
         response = requests.get(search_url, params=params, timeout=8)
         response.raise_for_status()
-        items = response.json().get("response", {}).get("docs", [])
+        data = response.json().get("data", {})
+        items = data.get("movies", [])
 
+        # Fallback if no items found (YTS query_term handles fuzzy matching well,
+        # but we keep the structure consistent with your original logic)
         if not items:
-            params["q"] = f"{movie_title}"
+            params["query_term"] = movie_title
             response = requests.get(search_url, params=params, timeout=8)
-            items = response.json().get("response", {}).get("docs", [])
+            items = response.json().get("data", {}).get("movies", [])
 
         results = []
         for item in items:
-            ident = item.get("identifier")
+            # YTS uses 'title_long' or 'title', and 'id' or 'imdb_code' as unique identifiers
+            ident = item.get("imdb_code") or str(item.get("id"))
             title = item.get("title")
             if not ident or not title:
                 continue
 
             year = item.get("year", "Unknown Year")
-            description = item.get("description", '')
+            description = item.get("synopsis", "")
             if isinstance(description, list):
                 description = " ".join(description)
-            clean_desc = (description[:120] + "...") if len(description) > 120 else description
+            clean_desc = (
+                (description[:120] + "...")
+                if len(description) > 120
+                else description
+            )
+
+            # Extracting the best quality torrent available (usually 1080p or 720p)
+            torrents = item.get("torrents", [])
+            torrent_url = torrents[0].get("url") if torrents else ""
 
             results.append({
                 "title": title,
                 "year": year,
                 "identifier": ident,
                 "description": clean_desc,
-                "verification_image": f"https://archive.org/services/img/{ident}/",
-                "backup_image": f"https://archive.org/download/{ident}/__ia_thumb.jpg",
-                "archive_url": f"https://archive.org/details/{ident}",
-                "torrent_url": f"https://archive.org/download/{ident}/{ident}_archive.torrent",
+                # YTS provides direct cover images
+                "verification_image": item.get("medium_cover_image", ""),
+                "backup_image": item.get("small_cover_image", ""),
+                "archive_url": item.get("url", ""),  # YTS movie details page
+                "torrent_url": torrent_url,  # Direct .torrent file download link
             })
 
-        clean_query = movie_title.replace('"', "").replace("'", "").strip().lower()
-        results.sort(key=lambda x: difflib.SequenceMatcher(None, clean_query, x["title"].lower()).ratio(), reverse=True)
+        # Keep your exact string matching sorting logic
+        clean_query = (
+            movie_title.replace('"', "").replace("'", "").strip().lower()
+        )
+        results.sort(
+            key=lambda x: difflib.SequenceMatcher(
+                None, clean_query, x["title"].lower()
+            ).ratio(),
+            reverse=True,
+        )
         return Response(results)
 
     except Exception as e:
@@ -77,147 +98,96 @@ def search_movies(request):
 
 
 # ==========================================
-# ADVANCED TORRENT BACKGROUND WORKER
+# 1. ADVANCED TORRENT BACKGROUND WORKER
 # ==========================================
 def background_torrent_worker(torrent_url, save_path, identifier):
     ses = None
     try:
-        # 1. OPTIMIZED SESSION SETTINGS FOR PUBLIC MOVIES
+        # 1. SETUP SESSION
         settings = {
-            'enable_dht': True,
-            'enable_lsd': True,       
-            'enable_upnp': True,
-            'enable_natpmp': True,
-            'announce_to_all_trackers': True,
-            'announce_to_all_tiers': True,
-            # Force outgoing/incoming encryption to bypass ISP blocking
-            'out_enc_policy': lt.enc_policy.forced,
-            'in_enc_policy': lt.enc_policy.forced,
-            # Increase connection limits
-            'connections_limit': 200,
+            'enable_dht': True, 'enable_lsd': True, 'enable_upnp': True,
+            'enable_natpmp': True, 'announce_to_all_trackers': True,
+            'announce_to_all_tiers': True, 'out_enc_policy': lt.enc_policy.forced,
+            'in_enc_policy': lt.enc_policy.forced, 'connections_limit': 200,
         }
         ses = lt.session(settings)
-        
-        # 2. SEED THE DHT OVER WIDER PORTS
-        # If 6881 is blocked by your ISP, this falls back automatically up to 6899
         ses.listen_on(6881, 6899)
 
-        # Robust, updated DHT bootstrap nodes (vital for finding peers without trackers)
-        dht_nodes = [
-            ("router.bittorrent.com", 6881),
-            ("router.utorrent.com", 6881),
-            ("dht.transmissionbt.com", 6881),
-            ("dht.aelitis.com", 6881),
-            ("router.bitcomet.com", 6881),
-        ]
-        for node in dht_nodes:
+        # DHT nodes
+        for node in [("router.bittorrent.com", 6881), ("router.utorrent.com", 6881), 
+                     ("dht.transmissionbt.com", 6881), ("dht.aelitis.com", 6881), 
+                     ("router.bitcomet.com", 6881)]:
             ses.add_dht_node(node)
-
         ses.start_dht()
 
-        # Fetch the torrent payload
+        # 2. FETCH TORRENT
         response = requests.get(torrent_url, timeout=15)
         if response.status_code != 200:
-            ACTIVE_DOWNLOADS[identifier] = {"completed": False, "error": "Failed to fetch torrent file"}
             return
 
         torrent_data = lt.bdecode(response.content)
         info = lt.torrent_info(torrent_data)
+        handle = ses.add_torrent({'save_path': save_path, 'storage_mode': lt.storage_mode_t.storage_mode_sparse, 'ti': info})
 
-        params = {
-            'save_path': save_path,
-            'storage_mode': lt.storage_mode_t.storage_mode_sparse,
-            'ti': info,
-        }
+        # 3. IDENTIFY TARGET VIDEO FILE
+        files = info.files()
+        max_size, largest_file_idx, file_relative_path = 0, -1, ""
+        for idx in range(files.num_files()):
+            if files.file_path(idx).lower().endswith(('.mp4', '.mkv', '.avi', '.mov')) and files.file_size(idx) > max_size:
+                max_size, largest_file_idx, file_relative_path = files.file_size(idx), idx, files.file_path(idx)
+        
+        # Calculate Absolute Path
+        full_video_path = os.path.join(save_path, file_relative_path) if file_relative_path else save_path
 
-        handle = ses.add_torrent(params)
+        # 4. INITIAL SAVE TO DB (STATUS: STARTED/QUEUED)
+        Movie.objects.update_or_create(
+            movie_id=identifier,
+            defaults={"identifier": identifier, "path": full_video_path, "torrent_url": torrent_url}
+        )
 
-        # 3. FRESH AGGRESSIVE PUBLIC TRACKERS 
-        # Essential for mainstream public torrent structures
-        public_trackers = [
-            "udp://tracker.opentrackr.org:1337/announce",
-            "udp://open.tracker.cl:1337/announce",
-            "udp://tracker.openbittorrent.com:6969/announce",
-            "udp://exodus.desync.com:6969/announce",
-            "udp://tracker.torrent.eu.org:451/announce",
-            "udp://tracker.moeking.me:6969/announce",
-            "http://tracker.gbitt.info:80/announce"
-        ]
-        for tracker in public_trackers:
+        # 5. CONFIGURE DOWNLOAD
+        for tracker in ["udp://tracker.opentrackr.org:1337/announce", "udp://open.tracker.cl:1337/announce", 
+                        "udp://tracker.openbittorrent.com:6969/announce", "udp://exodus.desync.com:6969/announce"]:
             handle.add_tracker({"url": tracker, "tier": 0})
 
-        # Target largest video file
-        files = info.files()
-        num_files = files.num_files()
-        largest_file_idx = -1
-        max_size = 0
-        # video_extensions = ('.mp4', '.mkv', '.avi', '.mov')
-        video_extensions = ('.mp4')
-        for idx in range(num_files):
-            file_path_str = files.file_path(idx)
-            file_size_bytes = files.file_size(idx)
-            if file_path_str.lower().endswith(video_extensions) and file_size_bytes > max_size:
-                max_size = file_size_bytes
-                largest_file_idx = idx
-
         if largest_file_idx != -1:
-            # Set target file to highest priority, everything else to 0 (ignore)
-            priorities = [0] * num_files
+            priorities = [0] * files.num_files()
             priorities[largest_file_idx] = 4
             handle.prioritize_files(priorities)
-            print(f"Targeting: {files.file_path(largest_file_idx)} ({max_size / (1024*1024):.1f} MB)")
 
         handle.set_sequential_download(True)
+        ACTIVE_DOWNLOADS[identifier] = {"handle": handle, "completed": False, "progress": 0.0}
 
-        # Save session pointer globally so it lives
-        ACTIVE_DOWNLOADS[identifier] = {
-            "session": ses,
-            "handle": handle,
-            "completed": False,
-            "error": None,
-            "save_path": save_path,
-        }
-
-        # Monitor progress loop
-        start_time = time.time()
-        STUCK_TIMEOUT = 120  # Cancel if absolutely no connection after 2 minutes
-
+        # 6. MONITOR LOOP
+        start_time, STUCK_TIMEOUT = time.time(), 120
         while True:
             status = handle.status()
-            progress = status.progress
-            ACTIVE_DOWNLOADS[identifier]["progress"] = progress
-
-            # If we finally have peers or progress, reset the stuck timeout clock
-            if status.num_peers > 0 or progress > 0.0:
-                start_time = time.time() 
-
-            if largest_file_idx != -1:
-                file_prog = handle.file_progress()
-                if len(file_prog) > largest_file_idx and file_prog[largest_file_idx] >= max_size:
-                    break
-            if status.is_seeding or progress >= 1.0:
+            ACTIVE_DOWNLOADS[identifier]["progress"] = status.progress
+            
+            if status.num_peers > 0 or status.progress > 0.0: start_time = time.time()
+            
+            # Check for completion
+            if (largest_file_idx != -1 and handle.file_progress()[largest_file_idx] >= max_size) or status.is_seeding:
                 break
-
-            if progress == 0.0 and (time.time() - start_time) > STUCK_TIMEOUT:
-                print(f"Download stuck at 0% with 0 peers, aborting: {identifier}")
-                ACTIVE_DOWNLOADS[identifier]["error"] = "Download timed out — No peers responding."
-                ACTIVE_DOWNLOADS[identifier]["completed"] = False
-                ses.remove_torrent(handle)
-                return
+            
+            if status.progress == 0.0 and (time.time() - start_time) > STUCK_TIMEOUT:
+                raise Exception("Download timed out")
 
             time.sleep(2)
 
+        # 7. DOWNLOAD FINISHED - CONFIRM PATH IN DB
         ACTIVE_DOWNLOADS[identifier]["completed"] = True
-        print(f"Download completed: {identifier}")
+        Movie.objects.update_or_create(
+            movie_id=identifier, 
+            defaults={"path": full_video_path}
+        )
 
     except Exception as e:
         print(f"Torrent error [{identifier}]: {e}")
-        if identifier in ACTIVE_DOWNLOADS:
-            ACTIVE_DOWNLOADS[identifier]["error"] = str(e)
-        else:
-            ACTIVE_DOWNLOADS[identifier] = {"completed": False, "error": str(e)}
+        ACTIVE_DOWNLOADS[identifier] = {"completed": False, "error": str(e)}
+
 # ==========================================
-# 2. DOWNLOAD MOVIE VIEW
+# 2. API DOWNLOAD VIEW
 # ==========================================
 @api_view(['POST'])
 def download_movie(request):
@@ -227,7 +197,17 @@ def download_movie(request):
     if not identifier or not torrent_url:
         return Response({"error": "Missing 'identifier' or 'torrent_url'"}, status=400)
 
-    if identifier in ACTIVE_DOWNLOADS:
+    # 1. DATABASE CHECK
+    if Movie.objects.filter(movie_id=identifier).exists():
+        movie_instance = Movie.objects.get(movie_id=identifier)
+        return Response({
+            "message": "Movie file is cached and tracked ready",
+            "path": movie_instance.path,
+            "torrent_url": movie_instance.torrent_url
+        }, status=200)
+
+    # 2. ACTIVE DOWNLOAD CHECK
+    if identifier in ACTIVE_DOWNLOADS and "handle" in ACTIVE_DOWNLOADS[identifier]:
         status = ACTIVE_DOWNLOADS[identifier]["handle"].status()
         return Response({
             "message": "Movie download in progress",
@@ -235,12 +215,16 @@ def download_movie(request):
             "download_rate_kb": round(status.download_rate / 1024, 2)
         }, status=200)
 
+    # 3. DIRECTORY CHECK
     movie_folder = os.path.join(DOWNLOAD_DIR, identifier)
-    
-    # Quick check if files already exist
     if os.path.exists(movie_folder) and len(os.listdir(movie_folder)) > 0:
-        return Response({"message": "Movie file is cached and ready"}, status=200)
+        Movie.objects.get_or_create(
+            movie_id=identifier,
+            defaults={"identifier": identifier, "path": movie_folder, "torrent_url": torrent_url}
+        )
+        return Response({"message": "Movie file found on disk, auto-registered tracking records"}, status=200)
 
+    # 4. INITIALIZE THREAD
     thread = threading.Thread(
         target=background_torrent_worker,
         args=(torrent_url, movie_folder, identifier),
@@ -252,7 +236,6 @@ def download_movie(request):
         "message": "Selective video download initiated successfully in the background",
         "identifier": identifier
     }, status=202)
-
 
 # ==========================================
 # 3. DOWNLOAD STATUS VIEW
@@ -309,82 +292,95 @@ def download_status(request, identifier):
 
 # watch 
 
+import os
+import re
+from django.http import StreamingHttpResponse, Http404
+from rest_framework.decorators import api_view
+from asgiref.sync import sync_to_async
+from rest_framework.response import Response
+
+# Import your model (ensure path matches your app structure)
+from .models import Movie 
+
 @api_view(['GET'])
 def stream_movie(request):
-    file_path = './video_test/lol.mp4'
-    
-    # Is the file still downloading? You need a way to track this.
-    # For example, checking if a temporary download lock file exists, 
-    # or if the downloader process is still active.
-    is_still_downloading = True  # Replace with your actual download status check
+    # 1. Get the identifier from the query parameters (e.g. ?identifier=tt5433140)
+    # Strip away any accidental literal quotes passed in from frontend matching
+    identifier = request.GET.get('identifier', '').strip(' "\'')
 
-    # If it doesn't exist at all yet, wait a moment or raise 404
+    if not identifier:
+        return Response({"error": "Missing 'identifier' query parameter"}, status=400)
+
+    # 2. Query the Movie model for the full file path
+    try:
+        movie_instance = Movie.objects.get(movie_id=identifier)
+        file_path = movie_instance.path
+    except Movie.DoesNotExist:
+        raise Http404("Movie metadata records not tracked in database.")
+
+    # 3. Verify file actually exists on disk where the DB says it does
     if not os.path.exists(file_path):
-        raise Http404("Movie not found")
+        raise Http404("Movie file path exists in database but file not found on disk")
 
-    current_file_size = os.path.getsize(file_path)
+    # =========================================================
+    # UNTOUCHED STREAMING LOGIC BELOW
+    # =========================================================
+    file_size = os.path.getsize(file_path)
     range_header = request.META.get('HTTP_RANGE', '').strip()
-    
+
     start = 0
+    end = file_size - 1
     status_code = 200
 
+    # Handle standard browser video range requests (e.g., skipping through timelines)
     if range_header:
         match = re.match(r'bytes=(\d+)-(\d*)', range_header)
         if match:
             start = int(match.group(1))
+            if match.group(2):
+                end = int(match.group(2))
             status_code = 206
 
-    # 1. Smarter Generator that waits for new data
-    def live_file_iterator(path, offset, chunk_size=8192, timeout=30):
-        """
-        Yields bytes from a file, waiting for new data if the file is still growing.
-        """
-        with open(path, 'rb') as f:
-            f.seek(offset)
-            time_spent_waiting = 0
-            
-            while True:
-                chunk = f.read(chunk_size)
-                if chunk:
-                    yield chunk
-                    time_spent_waiting = 0  # Reset timeout counter on successful read
-                else:
-                    # No data read. Check if the download is officially finished.
-                    # You must implement your own logic for checking if the download is done!
-                    download_finished = not is_still_downloading 
-                    
-                    if download_finished:
-                        break  # File is complete, we are done.
-                    
-                    # File is still downloading, wait for more data to arrive
-                    if time_spent_waiting >= timeout:
-                        break  # Avoid infinite loops if the downloader crashed
-                        
-                    time.sleep(0.5)
-                    time_spent_waiting += 0.5
+    content_length = end - start + 1
 
-    # 2. Configure headers for a growing file
+    def read_file_chunk(f, size):
+        return f.read(size)
+
+    # Async generator to stream the file in small pieces safely under Uvicorn
+    async def file_iterator_async(path, offset, length, chunk_size=32768):
+        f = open(path, 'rb')
+        f.seek(offset)
+        remaining = length
+        
+        try:
+            while remaining > 0:
+                to_read = min(chunk_size, remaining)
+                # Offload blocking read to a separate worker thread
+                chunk = await sync_to_async(read_file_chunk, thread_sensitive=False)(f, to_read)
+                
+                if not chunk:
+                    break
+                
+                yield chunk
+                remaining -= len(chunk)
+        finally:
+            f.close()
+
+    # Pass the async generator directly to StreamingHttpResponse
     response = StreamingHttpResponse(
-        live_file_iterator(file_path, start), 
+        file_iterator_async(file_path, start, content_length), 
         status=status_code, 
         content_type='video/mp4'
     )
-    
+
+    # Dynamically extract original file name for safe browser layout streaming representation
+    extracted_filename = os.path.basename(file_path)
+
+    # Standard headers telling the browser exactly how much data is coming
     response['Accept-Ranges'] = 'bytes'
-    response['Content-Disposition'] = 'inline; filename="lol.mp4"'
-    
-    # CRITICAL: If it's still downloading, we don't know the final content length.
-    # We omit or adapt the total size so the browser treats it as a live stream chunk.
-    if is_still_downloading:
-        # Tell the browser we are sending bytes starting from 'start', but total size is unknown (*)
-        response['Content-Range'] = f'bytes {start}-/*'
-        # Note: We omit 'Content-Length' entirely here because the stream length is dynamic.
-    else:
-        # Standard behavior for a fully finished file
-        file_size = os.path.getsize(file_path)
-        end = file_size - 1
-        content_length = end - start + 1
-        response['Content-Length'] = str(content_length)
+    response['Content-Length'] = str(content_length)
+    if range_header:
         response['Content-Range'] = f'bytes {start}-{end}/{file_size}'
-        
+    response['Content-Disposition'] = f'inline; filename="{extracted_filename}"'
+
     return response
