@@ -8,7 +8,9 @@ RUN pip install -r requirement.txt
 
 WORKDIR /app/movies
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+ENTRYPOINT ["bash","entrypoint.sh"]
+
+# CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
 # CMD ["uvicorn", "movies.asgi:application", "--host", "0.0.0.0", "--port", "8000"]
 
