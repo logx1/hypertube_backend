@@ -25,6 +25,7 @@ services:
     stdin_open: true
     tty: true
     environment:
+      - tmdb_api_key=${tmdb_api_key}
       - DB_BACKEND_USER=${DB_BACKEND_USER}
       - DB_BACKEND_NAME=${DB_BACKEND_NAME}
       - DB_MOVIES_BACKEND_PASSWORD=${DB_MOVIES_BACKEND_PASSWORD}
