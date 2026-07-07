@@ -15,8 +15,3 @@ GRANT USAGE, CREATE ON SCHEMA public TO movies_user;
 
 -- Optional but recommended: Make movies_user the owner of the public schema
 ALTER SCHEMA public OWNER TO movies_user;
-
-
-
-
-
