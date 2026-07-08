@@ -103,7 +103,6 @@ def search_movies(request):
 
 
 
-
 def transcode_to_144p(input_path, identifier, torrent_url):
     """
     Reads the original file and transcodes it into a separate 144p file.
@@ -158,8 +157,9 @@ def transcode_to_144p(input_path, identifier, torrent_url):
         if process.returncode == 0:
             print(f"Successfully created 144p file at: {output_path}")
             
-            # (Optional) Update database again on success if needed, 
-            # though the record parameters are already identical.
+            # --- UPDATE DATABASE TO COMPLETED ---
+            Movie.objects.filter(movie_id=target_144_identifier).update(completed=True)
+            
             if 'ACTIVE_DOWNLOADS' in globals() and target_144_identifier in ACTIVE_DOWNLOADS:
                 ACTIVE_DOWNLOADS[target_144_identifier]["status"] = "completed"
         else:
@@ -174,10 +174,10 @@ def transcode_to_144p(input_path, identifier, torrent_url):
             ACTIVE_DOWNLOADS[target_144_identifier]["status"] = f"exception: {str(e)}"
 
 
-
 # ==========================================
 # 1. ADVANCED TORRENT BACKGROUND WORKER
 # ==========================================
+
 def background_torrent_worker(torrent_url, save_path, identifier):
     ses = None
     try:
@@ -242,11 +242,8 @@ def background_torrent_worker(torrent_url, save_path, identifier):
             if status.num_peers > 0 or status.progress > 0.0: start_time = time.time()
             
             # --- START TRANSCODING SEPARATE FILE WHEN DATA IS READY ---
-            # We trigger the 144p transcoder once sequential progress begins hitting disk 
-            # to prevent trying to read a completely empty file structure.
             if not ACTIVE_DOWNLOADS[identifier]["ffmpeg_started"] and status.progress > 0.05:
                 if os.path.exists(full_video_path):
-                    # FIX: Added torrent_url to the thread arguments below
                     ffmpeg_thread = threading.Thread(
                         target=transcode_to_144p, 
                         args=(full_video_path, identifier, torrent_url),
@@ -266,11 +263,17 @@ def background_torrent_worker(torrent_url, save_path, identifier):
 
         # 7. ORIGINAL DOWNLOAD FINISHED
         ACTIVE_DOWNLOADS[identifier]["completed"] = True
-        Movie.objects.update_or_create(movie_id=identifier, defaults={"path": full_video_path})
+        
+        # --- UPDATE DATABASE TO COMPLETED HERE ---
+        Movie.objects.update_or_create(
+            movie_id=identifier, 
+            defaults={"path": full_video_path, "completed": True}
+        )
 
     except Exception as e:
         print(f"Torrent error [{identifier}]: {e}")
         ACTIVE_DOWNLOADS[identifier] = {"completed": False, "error": str(e)}
+
 # ==========================================
 # 2. API DOWNLOAD VIEW
 # ==========================================

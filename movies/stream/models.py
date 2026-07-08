@@ -7,6 +7,7 @@ class Movie(models.Model):
     identifier = models.CharField(max_length=250)
     path = models.CharField(max_length=355)
     torrent_url = models.CharField(max_length=455)
+    completed = models.BooleanField(default=False)
 
 
 
