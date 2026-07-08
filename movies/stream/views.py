@@ -8,6 +8,7 @@ import libtorrent as lt
 from django.http import StreamingHttpResponse, Http404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from asgiref.sync import sync_to_async
 import re
 from .models import Movie
 
@@ -241,7 +242,8 @@ def download_movie(request):
 # 3. DOWNLOAD STATUS VIEW
 # ==========================================
 @api_view(['GET'])
-def download_status(request, identifier):
+def download_status(request):
+    identifier = request.GET.get('identifier', '').strip(' "\'')
     if identifier in ACTIVE_DOWNLOADS:
         download_data = ACTIVE_DOWNLOADS[identifier]
         status = download_data["handle"].status()
@@ -279,28 +281,7 @@ def download_status(request, identifier):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 # watch 
-
-import os
-import re
-from django.http import StreamingHttpResponse, Http404
-from rest_framework.decorators import api_view
-from asgiref.sync import sync_to_async
-from rest_framework.response import Response
-
-# Import your model (ensure path matches your app structure)
-from .models import Movie 
 
 @api_view(['GET'])
 def stream_movie(request):
