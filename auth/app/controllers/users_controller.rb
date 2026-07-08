@@ -286,7 +286,7 @@ end
   
 
   def user_params
-    request = params.require(:auth).permit(:username, :password, :password_confirmation, :last_name, :first_name, :email)
+    request = params.require(:auth).permit(:username, :password, :password_confirmation, :last_name, :imageUrl, :first_name, :email)
   end
 
 ################################################################################################################################################################

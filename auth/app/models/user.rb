@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+    has_many :watched_movies, dependent: :destroy
     has_many :oauth_providers, dependent: :destroy
     has_secure_password
     validates :username, presence: true, on: :create,  uniqueness: true, length: { minimum: 3, maximum: 30 }
@@ -9,4 +10,3 @@ class User < ApplicationRecord
     validates :imageUrl, presence: false, on: :create
     validates :language, presence: true, on: :create
 end
-    
