@@ -345,10 +345,9 @@ def download_status(request):
         })
     
     # 2. Check the Database to see if it's already marked as completed
-    # (Checking both the base identifier and the 144p version if needed)
     if Movie.objects.filter(movie_id=identifier, completed=True).exists():
         return Response({
-            "active": True,
+            "active": False,  # Changed from True to False because it's done downloading
             "completed": True,
             "progress": 100,
             "download_rate_kb": 0,
@@ -362,7 +361,6 @@ def download_status(request):
 
     # 4. Not found anywhere
     return Response({"active": False, "completed": False, "message": "Not active."})
-
 
 
 
