@@ -268,7 +268,7 @@ end
   
 
   def me
-    render json: { json: @current_user.as_json(only: [:id, :username, :last_name, :first_name, :language, :email]),  message: "ok" }
+    render json: { json: @current_user.as_json(only: [:id, :username, :last_name, :first_name, :language, :email, :imageUrl]),  message: "ok" }
   end
 
   
