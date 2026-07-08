@@ -6,6 +6,8 @@ COPY . .
 
 RUN pip install -r requirement.txt
 
+RUN apt-get update && apt-get upgrade -y && apt-get install -y ffmpeg
+
 WORKDIR /app/movies
 
 ENTRYPOINT ["bash","entrypoint.sh"]

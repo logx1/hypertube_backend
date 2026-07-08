@@ -10,6 +10,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from asgiref.sync import sync_to_async
 import re
+
+import subprocess
 from .models import Movie
 
 ACTIVE_DOWNLOADS = {}
@@ -98,6 +100,81 @@ def search_movies(request):
         return Response({"error": str(e)}, status=500)
 
 
+
+
+
+
+def transcode_to_144p(input_path, identifier, torrent_url):
+    """
+    Reads the original file and transcodes it into a separate 144p file.
+    Safely initializes dictionary keys to prevent Threading KeyErrors.
+    """
+    base, ext = os.path.splitext(input_path)
+    output_path = f"{base}_144.mp4" 
+    target_144_identifier = f"{identifier}144" 
+    
+    print(f"Creating 144p version for ID: {target_144_identifier}")
+
+    cmd = [
+        'ffmpeg', '-y',
+        '-i', input_path,
+        '-vf', 'scale=-2:144',  
+        '-c:v', 'libx264',
+        '-crf', '24',           
+        '-preset', 'veryfast',  
+        '-c:a', 'aac',
+        '-b:a', '128k',
+        '-movflags', '+faststart', 
+        output_path
+    ]
+
+    try:
+        # 1. Initialize the memory dictionary safely before spawning the process
+        if 'ACTIVE_DOWNLOADS' in globals():
+            ACTIVE_DOWNLOADS[target_144_identifier] = {
+                "status": "transcoding",
+                "ffmpeg_pid": None
+            }
+
+        # 2. SAVE TO DATABASE AT START (So the record exists immediately)
+        Movie.objects.update_or_create(
+            movie_id=target_144_identifier,
+            defaults={
+                "identifier": target_144_identifier, 
+                "path": output_path, 
+                "torrent_url": torrent_url 
+            }
+        )
+
+        # 3. Start the FFmpeg process
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        
+        # Update with the actual PID now that it's running
+        if 'ACTIVE_DOWNLOADS' in globals() and target_144_identifier in ACTIVE_DOWNLOADS:
+            ACTIVE_DOWNLOADS[target_144_identifier]["ffmpeg_pid"] = process.pid
+        
+        stdout, stderr = process.communicate()
+        
+        if process.returncode == 0:
+            print(f"Successfully created 144p file at: {output_path}")
+            
+            # (Optional) Update database again on success if needed, 
+            # though the record parameters are already identical.
+            if 'ACTIVE_DOWNLOADS' in globals() and target_144_identifier in ACTIVE_DOWNLOADS:
+                ACTIVE_DOWNLOADS[target_144_identifier]["status"] = "completed"
+        else:
+            error_msg = stderr.decode('utf-8', errors='ignore')
+            print(f"FFmpeg error: {error_msg}")
+            if 'ACTIVE_DOWNLOADS' in globals() and target_144_identifier in ACTIVE_DOWNLOADS:
+                ACTIVE_DOWNLOADS[target_144_identifier]["status"] = f"failed: {error_msg}"
+                
+    except Exception as e:
+        print(f"Transcoding thread failed for {target_144_identifier}: {e}")
+        if 'ACTIVE_DOWNLOADS' in globals() and target_144_identifier in ACTIVE_DOWNLOADS:
+            ACTIVE_DOWNLOADS[target_144_identifier]["status"] = f"exception: {str(e)}"
+
+
+
 # ==========================================
 # 1. ADVANCED TORRENT BACKGROUND WORKER
 # ==========================================
@@ -114,21 +191,23 @@ def background_torrent_worker(torrent_url, save_path, identifier):
         ses = lt.session(settings)
         ses.listen_on(6881, 6899)
 
-        # DHT nodes
-        for node in [("router.bittorrent.com", 6881), ("router.utorrent.com", 6881), 
-                     ("dht.transmissionbt.com", 6881), ("dht.aelitis.com", 6881), 
-                     ("router.bitcomet.com", 6881)]:
+        for node in [("router.bittorrent.com", 6881), ("router.utorrent.com", 6881)]:
             ses.add_dht_node(node)
         ses.start_dht()
 
         # 2. FETCH TORRENT
         response = requests.get(torrent_url, timeout=15)
-        if response.status_code != 200:
-            return
+        if response.status_code != 200: return
 
         torrent_data = lt.bdecode(response.content)
         info = lt.torrent_info(torrent_data)
-        handle = ses.add_torrent({'save_path': save_path, 'storage_mode': lt.storage_mode_t.storage_mode_sparse, 'ti': info})
+        
+        # Kept exactly as you requested: sparse storage allocation
+        handle = ses.add_torrent({
+            'save_path': save_path, 
+            'storage_mode': lt.storage_mode_t.storage_mode_sparse, 
+            'ti': info
+        })
 
         # 3. IDENTIFY TARGET VIDEO FILE
         files = info.files()
@@ -137,27 +216,22 @@ def background_torrent_worker(torrent_url, save_path, identifier):
             if files.file_path(idx).lower().endswith(('.mp4', '.mkv', '.avi', '.mov')) and files.file_size(idx) > max_size:
                 max_size, largest_file_idx, file_relative_path = files.file_size(idx), idx, files.file_path(idx)
         
-        # Calculate Absolute Path
         full_video_path = os.path.join(save_path, file_relative_path) if file_relative_path else save_path
 
-        # 4. INITIAL SAVE TO DB (STATUS: STARTED/QUEUED)
+        # 4. INITIAL SAVE TO DB (Original Movie)
         Movie.objects.update_or_create(
             movie_id=identifier,
             defaults={"identifier": identifier, "path": full_video_path, "torrent_url": torrent_url}
         )
 
         # 5. CONFIGURE DOWNLOAD
-        for tracker in ["udp://tracker.opentrackr.org:1337/announce", "udp://open.tracker.cl:1337/announce", 
-                        "udp://tracker.openbittorrent.com:6969/announce", "udp://exodus.desync.com:6969/announce"]:
-            handle.add_tracker({"url": tracker, "tier": 0})
-
         if largest_file_idx != -1:
             priorities = [0] * files.num_files()
             priorities[largest_file_idx] = 4
             handle.prioritize_files(priorities)
 
         handle.set_sequential_download(True)
-        ACTIVE_DOWNLOADS[identifier] = {"handle": handle, "completed": False, "progress": 0.0}
+        ACTIVE_DOWNLOADS[identifier] = {"handle": handle, "completed": False, "progress": 0.0, "ffmpeg_started": False}
 
         # 6. MONITOR LOOP
         start_time, STUCK_TIMEOUT = time.time(), 120
@@ -166,6 +240,20 @@ def background_torrent_worker(torrent_url, save_path, identifier):
             ACTIVE_DOWNLOADS[identifier]["progress"] = status.progress
             
             if status.num_peers > 0 or status.progress > 0.0: start_time = time.time()
+            
+            # --- START TRANSCODING SEPARATE FILE WHEN DATA IS READY ---
+            # We trigger the 144p transcoder once sequential progress begins hitting disk 
+            # to prevent trying to read a completely empty file structure.
+            if not ACTIVE_DOWNLOADS[identifier]["ffmpeg_started"] and status.progress > 0.05:
+                if os.path.exists(full_video_path):
+                    # FIX: Added torrent_url to the thread arguments below
+                    ffmpeg_thread = threading.Thread(
+                        target=transcode_to_144p, 
+                        args=(full_video_path, identifier, torrent_url),
+                        daemon=True
+                    )
+                    ffmpeg_thread.start()
+                    ACTIVE_DOWNLOADS[identifier]["ffmpeg_started"] = True
             
             # Check for completion
             if (largest_file_idx != -1 and handle.file_progress()[largest_file_idx] >= max_size) or status.is_seeding:
@@ -176,17 +264,13 @@ def background_torrent_worker(torrent_url, save_path, identifier):
 
             time.sleep(2)
 
-        # 7. DOWNLOAD FINISHED - CONFIRM PATH IN DB
+        # 7. ORIGINAL DOWNLOAD FINISHED
         ACTIVE_DOWNLOADS[identifier]["completed"] = True
-        Movie.objects.update_or_create(
-            movie_id=identifier, 
-            defaults={"path": full_video_path}
-        )
+        Movie.objects.update_or_create(movie_id=identifier, defaults={"path": full_video_path})
 
     except Exception as e:
         print(f"Torrent error [{identifier}]: {e}")
         ACTIVE_DOWNLOADS[identifier] = {"completed": False, "error": str(e)}
-
 # ==========================================
 # 2. API DOWNLOAD VIEW
 # ==========================================
