@@ -331,7 +331,7 @@ def download_movie(request):
 @api_view(['GET'])
 def download_status(request):
     identifier = request.GET.get('identifier', '').strip(' "\'')
-    
+    movie_folder = os.path.join(DOWNLOAD_DIR, identifier)
     # 1. Check the Database to see if it's already marked as completed
     if Movie.objects.filter(movie_id=identifier, completed=True).exists():
         return Response({
@@ -342,7 +342,7 @@ def download_status(request):
             "num_peers": 0
         })
     # 2. Check if it's currently active in memory
-    if identifier in ACTIVE_DOWNLOADS:
+    if identifier in ACTIVE_DOWNLOADS and os.path.exists(movie_folder) and len(os.listdir(movie_folder)) > 0:
         download_data = ACTIVE_DOWNLOADS[identifier]
         status = download_data["handle"].status()
         return Response({
@@ -355,7 +355,7 @@ def download_status(request):
     
 
     # 3. Fallback: Check local folder fallback if memory was cleared but files exist
-    movie_folder = os.path.join(DOWNLOAD_DIR, identifier)
+    
     if os.path.exists(movie_folder) and len(os.listdir(movie_folder)) > 0:
          return Response({"active": False, "completed": True, "message": "Download complete."})
 
