@@ -20,5 +20,6 @@ Rails.application.routes.draw do
   post "/user/check_watched", to: "watched_movies#check_movie_watched"
   get "/users", to: "users#display_users"
   get '/users/:id', to: 'users#show'
+  post '/oauth/token', to: 'oauth#token'
 end
 
