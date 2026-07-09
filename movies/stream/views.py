@@ -9,6 +9,7 @@ from django.http import StreamingHttpResponse, Http404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from asgiref.sync import sync_to_async
+from django.utils import timezone
 import re
 
 import subprocess
@@ -388,6 +389,7 @@ def stream_movie(request):
     try:
         movie_instance = Movie.objects.get(movie_id=identifier)
         file_path = movie_instance.path
+        Movie.objects.filter(movie_id=identifier).update(geted_at=timezone.now())
     except Movie.DoesNotExist:
         raise Http404("Movie metadata records not tracked in database.")
 

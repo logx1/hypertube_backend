@@ -9,6 +9,7 @@ class Movie(models.Model):
     path = models.CharField(max_length=355)
     torrent_url = models.CharField(max_length=455)
     completed = models.BooleanField(default=False)
+    geted_at = models.DateTimeField(auto_now_add=True)
 
 
 
@@ -35,3 +36,4 @@ class comments(models.Model):
     movie_id = models.CharField(max_length=250)
     comments = models.CharField(max_length=455)
     user_name = models.CharField(max_length=250)
+    created_at = models.DateTimeField(auto_now_add=True)
