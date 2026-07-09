@@ -21,5 +21,6 @@ Rails.application.routes.draw do
   get "/users", to: "users#display_users"
   get '/users/:id', to: 'users#show'
   post '/oauth/token', to: 'oauth#token'
+  patch '/users/:id', to: 'users#update_request'
 end
 
