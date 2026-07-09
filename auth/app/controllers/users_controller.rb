@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  skip_before_action :authenticate, only: [ :create, :callback_github, :callback_google, :intra_callback, :set_cookies, :forgot_password ]
+  skip_before_action :authenticate, only: [ :create, :callback_github, :callback_google, :intra_callback, :set_cookies, :forgot_password]
 
   
 ################################################################################################################################################################
@@ -7,6 +7,32 @@ class UsersController < ApplicationController
   def index
     render json: { message: "Auth endpoint working" }
   end
+
+################################################################################################################################################################
+
+def display_users
+  users = User.select(:id, :username)
+  if user
+    render json: users , status: :ok
+  else
+    render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+  end
+end
+
+################################################################################################################################################################
+
+def show
+  user = User.find(params[:id])
+  if user
+    if user.id == @current_user.id
+      render json: { username: user.username, imageUrl: user.imageUrl, email: user.email }, status: :ok
+    else
+      render json: { username: user.username, imageUrl: user.imageUrl }, status: :ok
+    end
+  else
+    render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+  end
+end
 
 ################################################################################################################################################################
 

@@ -18,5 +18,7 @@ Rails.application.routes.draw do
   patch "/user/update_password", to: "users#update_forgot_password"
   post "/user/save_watched", to: "watched_movies#add_movie_watched"
   post "/user/check_watched", to: "watched_movies#check_movie_watched"
+  get "/users", to: "users#display_users"
+  get '/users/:id', to: 'users#show'
 end
 
