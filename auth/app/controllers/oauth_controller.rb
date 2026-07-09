@@ -25,7 +25,7 @@ class OAuthController < ApplicationController
       client_id: client.client_id,
       exp: 1.hour.from_now.to_i
     }
-    JWT.encode(payload, Rails.application.credentials.secret_key_base, 'HS256')
+    JsonWebToken.encode(payload, 24.hours.from_now)
   end
   
 end

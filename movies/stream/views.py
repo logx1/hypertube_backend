@@ -17,7 +17,7 @@ from .models import Movie
 
 ACTIVE_DOWNLOADS = {}
 DOWNLOAD_DIR = "/movies_cache"
-
+from .models import comments
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 
@@ -459,3 +459,110 @@ def stream_movie(request):
     response['Content-Disposition'] = f'inline; filename="{extracted_filename}"'
 
     return response
+
+
+
+ # =========================================================
+    # get info of movies
+# =========================================================
+
+@api_view(["GET"])
+def movie_details(request):
+
+    imdb_id = request.query_params.get("identifier", "").strip()
+    if not imdb_id:
+        movies_data = list(Movie.objects.values('movie_id', 'identifier', 'completed'))
+        return Response({"movies": movies_data}, status=200)
+    details_url = "https://yts.lt/api/v2/list_movies.json"
+    params = {
+        "query_term": imdb_id,
+        "limit": 1,
+    }
+    try:
+        response = requests.get(details_url, params=params, timeout=8)
+        response.raise_for_status()
+        data = response.json().get("data", {})
+        movies = data.get("movies", [])
+        if not movies:
+            return Response(
+                {"error": "Movie not found"},
+                status=404,
+            )
+        item = movies[0]
+        ident = item.get("imdb_code") or str(item.get("id"))
+        title = item.get("title")
+        year = item.get("year", "Unknown Year")
+        description = item.get("synopsis") or item.get(
+            "description_full", ""
+        )
+        if isinstance(description, list):
+            description = " ".join(description)
+        clean_desc = (
+            (description[:120] + "...")
+            if len(description) > 120
+            else description
+        )
+        torrents = item.get("torrents", [])
+        torrent_url = torrents[0].get("url") if torrents else ""
+        # Fetch existing comments where movie_id equals the movie's identifier
+        movie_comments_queryset = comments.objects.filter(movie_id=ident)
+        comments_list = [
+            {
+                "comment_id": c.comment_id,
+                "user_name": c.user_name,
+                "comments": c.comments,
+                "created_at": c.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+            for c in movie_comments_queryset
+        ]
+        result = {
+            "title": title,
+            "year": year,
+            "identifier": ident,
+            "description": clean_desc,
+            "verification_image": item.get("medium_cover_image", ""),
+            "backup_image": item.get("small_cover_image", ""),
+            "archive_url": item.get("url", ""),
+            "torrent_url": torrent_url,
+            "comments": comments_list,
+        }
+        return Response(result, status=200)
+    except Exception as e:
+        return Response(
+            {"error": str(e)}, status=500
+        )
+    
+@api_view(["GET"])
+def delete_movie_by_identifier(request):
+    identifier = request.GET.get('identifier', '').strip(' "\'')
+    
+    if not identifier:
+        return Response({'error': 'Identifier is required'}, status=400)
+    
+    try:
+        # 1. Find the movie in the database
+        movie = Movie.objects.get(identifier=identifier)
+        
+        # 2. (Optional) Delete the actual file from disk if it exists
+        if movie.path and os.path.exists(movie.path):
+            os.remove(movie.path)
+            file_status = "File deleted from disk."
+        else:
+            file_status = "No physical file found to delete."
+        
+        # Save details for the description response before deleting
+        movie_details = f"Movie ID: {movie.movie_id}, Path: {movie.path}"
+        
+        # 3. Delete from the database
+        movie.delete()
+        
+        # 4. Return success message and description
+        return Response({
+            'status': 'success',
+            'message': 'Movie deleted successfully from database.',
+            'description': movie_details,
+            'file_status': file_status
+        }, status=200)
+        
+    except Movie.DoesNotExist:
+        return Response({'error': 'Movie with that identifier not found.'}, status=404)

@@ -4,10 +4,24 @@ class ApplicationController < ActionController::API
 
   def authenticate
     authorization_header = request.headers['Authorization']
-    token =  authorization_header&.split(' ')&.last
+    token = authorization_header&.split(' ')&.last
+
+    unless token
+      return render json: { error: 'Unauthorized' }, status: :unauthorized
+    end
+
     check = JsonWebToken.decode(token)
-    @current_user = User.find_by(id: check['user_id']) if check
-    render json: { error: 'Unauthorized' }, status: :unauthorized unless @current_user
+
+    unless check
+      return render json: { error: 'Invalid or expired token' }, status: :unauthorized
+    end
+
+    @current_user = User.find_by(id: check['user_id']) if check['user_id']
+    @current_client = OAuthClient.find_by(client_id: check['client_id']) if check['client_id']
+
+    unless @current_user || @current_client
+      render json: { error: 'Unauthorized' }, status: :unauthorized
+    end
   end
 
 end

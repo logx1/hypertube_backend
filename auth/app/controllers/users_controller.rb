@@ -21,6 +21,26 @@ end
 
 ################################################################################################################################################################
 
+def update_request
+  @user = User.find(params[:id])
+
+  unless @user.id == @current_user.id
+    return render json: { errors: "You Cannot Change Another User Data" }, status: :forbidden
+  end
+
+  if update_api.empty?
+    return render json: { errors: "Cannot Change That Field or Wrong Request" }, status: :unprocessable_entity
+  end
+
+  if @user.update(update_api)
+    render json: { Success: "User Data Updated" }, status: :ok
+  else
+    render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
+  end
+end
+
+################################################################################################################################################################
+
 def show
   user = User.find(params[:id])
   if user
@@ -331,6 +351,10 @@ end
 
   def update_forgot
     request = params.require(:auth).permit(:new_password, :new_password_confirmation)
+  end
+
+  def update_api
+    request = params.require(:auth).permit(:username, :email, :password, :imageUrl)
   end
 
 end
