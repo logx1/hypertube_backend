@@ -12,7 +12,7 @@ class UserMailer < ApplicationMailer
       5.minutes.from_now
     )
     
-    @reset_url = "http://localhost:3000/reset?token=#{token}"
+    @reset_url = "http://localhost:3000/reset/#{token}"
     
     mail(to: @user.email, subject: 'Reset Password on HyperTube')
   end
