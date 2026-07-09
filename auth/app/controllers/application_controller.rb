@@ -17,7 +17,7 @@ class ApplicationController < ActionController::API
     end
 
     @current_user = User.find_by(id: check['user_id']) if check['user_id']
-    @current_client = OauthClient.find_by(client_id: check['client_id']) if check['client_id']
+    @current_client = OAuthClient.find_by(client_id: check['client_id']) if check['client_id']
 
     unless @current_user || @current_client
       render json: { error: 'Unauthorized' }, status: :unauthorized
