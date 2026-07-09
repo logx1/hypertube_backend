@@ -38,7 +38,8 @@ def comments_view(request):
                 "comment_id": comment.comment_id,
                 "movie_id": comment.movie_id,
                 "comments": comment.comments,
-                "user_name": comment.user_name
+                "user_name": comment.user_name,
+                "created_at" : comment.created_at
             })
             
         return Response({
