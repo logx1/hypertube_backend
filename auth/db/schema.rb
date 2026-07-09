@@ -10,9 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_08_174122) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_09_165252) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "oauth_clients", force: :cascade do |t|
+    t.string "client_id"
+    t.datetime "created_at", null: false
+    t.string "name"
+    t.string "secret_digest"
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_oauth_clients_on_client_id", unique: true
+  end
 
   create_table "oauth_providers", force: :cascade do |t|
     t.datetime "created_at", null: false
