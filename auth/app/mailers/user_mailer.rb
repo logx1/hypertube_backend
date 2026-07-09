@@ -5,7 +5,7 @@ class UserMailer < ApplicationMailer
 
     @token = user.signed_id(expires_in: 15.minutes, purpose: "password_reset")
     
-    @reset_url = "http://localhost:3000/reset?token=#{@token}"
+    @reset_url = "http://localhost:3000/reset/#{@token}"
     
     mail(to: @user.email, subject: 'Reset Password on HyperTube')
   end

@@ -229,7 +229,7 @@ end
 ################################################################################################################################################################
 
   def forgot_password
-    email = params[:email].downcase
+    email = params[:email]
 
     if email.blank?
       return render json: { error: "Email not provided" }, status: :unprocessable_entity
