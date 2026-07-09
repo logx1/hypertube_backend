@@ -1,0 +1,42 @@
+.gradientButton {
+  height: 56px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 700;
+  border-radius: 12px;
+  background: -webkit-gradient(linear, left top, right bottom, from(#c0c1ff), to(#8083ff));
+  background: linear-gradient(to bottom right, #c0c1ff, #8083ff);
+  color: #0d0096;
+  -webkit-box-shadow: 0 10px 15px -3px rgba(192, 193, 255, 0.2);
+          box-shadow: 0 10px 15px -3px rgba(192, 193, 255, 0.2);
+  cursor: pointer;
+  border: none;
+  -webkit-transition: all 0.2s ease;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.gradientButton:hover {
+  -webkit-transform: scale(1.02);
+          transform: scale(1.02);
+}
+
+.gradientButton:active {
+  -webkit-transform: scale(0.98);
+          transform: scale(0.98);
+}
+
+.gradientButton:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+/*# sourceMappingURL=GradientButton.module.css.map */

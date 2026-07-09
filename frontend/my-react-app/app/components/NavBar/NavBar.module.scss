@@ -1,0 +1,227 @@
+.navBar {
+  //   border: 1px solid red;
+  position: sticky;
+  top: 0;
+  padding: 20px 30px;
+  background-color: var(--primaryBackgroundColor);
+  display: flex;
+  justify-content: space-between;
+  z-index: 4;
+  border-bottom: 1px solid var(--primaryColor);
+
+  .leftSide {
+    width: 33%;
+    letter-spacing: 1px;
+    display: flex;
+    column-gap: 30px;
+    align-items: center;
+    button {
+      background: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      color: var(--primaryColor);
+      display: none;
+    }
+    p {
+      font-size: 25px;
+      font-weight: 800;
+      color: #6366f1;
+    }
+    // height: 10px;
+    .navigationList {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      column-gap: 20px;
+
+      li {
+        // border: 1px solid red;
+        a {
+          color: #545f73;
+          text-decoration: none;
+          // font-family: ;
+          position: relative;
+          transition: color 100ms linear;
+        }
+        a:hover {
+          color: var(--primaryColor);
+        }
+        a::before {
+          content: "";
+          position: absolute;
+          left: 0;
+          right: 100%;
+          height: 2px;
+          bottom: -5px;
+          background-color: #6366f1;
+        }
+
+        a:hover::before {
+          color: var(--primaryColor);
+          // right: 0;
+          animation: expandWidth 100ms linear forwards;
+        }
+
+        .selectedTab {
+          color: var(--primaryColor);
+          // text-decoration: underline;
+          // margin: 50px;
+          // position: relative;
+        }
+        .selectedTab::before {
+          content: "";
+          position: absolute;
+          left: 0;
+          right: 0;
+          height: 2px;
+          bottom: -5px;
+          background-color: #6366f1;
+        }
+      }
+    }
+  }
+  .center {
+    width: 33%;
+    // border: 1px solid red;
+    position: relative;
+    .searchForMoviesBtn {
+      // background-color: red;
+      width: 100%;
+      // height: 100%;
+      background-color: var(--outlinedColor);
+      text-align: start;
+      padding: 10px 20px;
+      padding-left: 15px;
+      color: white;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      column-gap: 10px;
+      .buttonTxt {
+        font-size: 15px;
+        color: var(--secondaryTextColor);
+      }
+      span {
+        display: flex;
+        align-items: center;
+      }
+    }
+    input {
+      border-radius: 15px;
+    }
+    .searchResultContainer {
+      position: absolute;
+      top: 101%;
+      border: 1px solid var(--primaryColor);
+      border-radius: 10px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      background-color: var(--primaryBackgroundColor);
+      ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        li {
+          a {
+            text-decoration: none;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+          }
+          a:hover {
+            background-color: #6365f12c;
+          }
+        }
+      }
+    }
+  }
+  .rightSide {
+    // background-color: green;
+    // height: 10px;
+    width: 33%;
+    display: flex;
+    align-items: center;
+    // border: 1px solid red;
+    justify-content: flex-end;
+    .navBarImg {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+  }
+}
+
+@keyframes expandWidth {
+  from {
+    right: 100%;
+  }
+  to {
+    right: 0;
+  }
+}
+
+@media screen and (max-width: 1487px) {
+  .navBar {
+    display: grid;
+    grid-template-columns: 1fr 1fr 100px;
+    .leftSide {
+      // border: 1px solid white;
+      width: 100%;
+      button {
+        display: flex;
+      }
+    }
+    .center {
+      display: flex;
+      justify-content: flex-end;
+      // border: 1px solid blue;
+      width: 100%;
+    }
+    .rightSide {
+      // border: 1px solid green;
+      width: 100%;
+      // width: min-content;
+    }
+  }
+}
+
+@media screen and (max-width: 1487px) {
+  .navBar {
+    //   border: 1px solid red;
+
+    padding: 20px;
+  }
+}
+
+@media screen and (max-width: 1110px) {
+  .navBar {
+    .center {
+      // display: none;
+      .searchForMoviesBtn {
+        display: none;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 605px) {
+  .navBar {
+    .leftSide {
+      .navigationList {
+        display: none;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 351px) {
+  .navBar {
+    .rightSide {
+      display: none;
+    }
+  }
+}

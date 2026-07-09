@@ -1,0 +1,109 @@
+.editProfileContainer {
+  //   border: 1px solid red;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 30px;
+  //   max-width: 1000px;
+  width: 900px;
+  margin: auto;
+  .pageHeader {
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+    p {
+      color: var(--secondaryTextColor);
+    }
+  }
+  .personalInformationsContainer {
+    // border: 1px solid white;
+    width: 100%;
+    padding: 30px;
+    background-color: var(--outlinedColor);
+    border-radius: 10px;
+    // max-width: 800px;
+    // margin: auto;
+    display: flex;
+    flex-direction: column;
+    row-gap: 30px;
+    h2 {
+      color: var(--primaryColor);
+      display: flex;
+      align-items: center;
+      column-gap: 10px;
+    }
+    .personalInformationsEditor {
+      //   border: 1px solid white;
+      display: flex;
+      flex-direction: column;
+      row-gap: 30px;
+      //   grid-template-columns: 1fr 1fr;
+      .avatarContainer {
+        // border: 1px solid green;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        row-gap: 10px;
+        img {
+          width: 150px;
+          height: 150px;
+          border-radius: 50%;
+        }
+        p {
+          color: #3c475a;
+        }
+      }
+      .infosContainer {
+        // border: 1px solid orange;
+        display: flex;
+        flex-direction: column;
+        row-gap: 20px;
+        .inputsWrapper {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          column-gap: 30px;
+        }
+        .inputHolder {
+          //   border: 1px solid white;
+          display: flex;
+          flex-direction: column;
+          row-gap: 10px;
+          label {
+            font-family: var(--primaryFontFamily);
+          }
+          div {
+            span {
+              display: none;
+            }
+            input {
+              border: 1px solid var(--primaryColor);
+              padding-left: 10px;
+            }
+          }
+        }
+        .inputWrapper {
+          .inputHolder {
+            label {
+              font-family: var(--primaryFontFamily);
+            }
+            div {
+              span {
+                display: none;
+              }
+              input {
+                border: 1px solid var(--primaryColor);
+                padding-left: 10px;
+              }
+            }
+          }
+        }
+        .submitContainer {
+          display: flex;
+          justify-content: flex-end;
+          justify-content: center;
+        }
+      }
+    }
+  }
+}

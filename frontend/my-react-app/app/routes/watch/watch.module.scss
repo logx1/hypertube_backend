@@ -1,0 +1,51 @@
+.watchPage {
+  display: flex;
+  flex-direction: column;
+  row-gap: 30px;
+
+  .videoBox {
+    // border: 1px solid red;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(100svh - 145px);
+    video {
+      width: 100%;
+      // width: 800px;
+      // height: 400px;
+      // border: 1px solid blue;
+    }
+  }
+
+  .notAvailableBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(100svh - 145px);
+  }
+
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: calc(100svh - 145px);
+    row-gap: 40px;
+    .loadingBox {
+      width: 50px;
+      height: 50px;
+      border: 3px solid var(--primaryColor);
+      border-top-color: transparent;
+      border-bottom-color: transparent;
+      border-radius: 50%;
+
+      animation: load 500ms infinite linear;
+    }
+  }
+}
+
+@keyframes load {
+  to {
+    transform: rotate(360deg);
+  }
+}

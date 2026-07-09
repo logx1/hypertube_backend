@@ -1,0 +1,954 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+// HyperTube Design System Colors
+$bg-main: #0b1326;
+$bg-card: #202636;
+$bg-card-border: rgba(255, 255, 255, 0.05);
+$bg-input: #151a24;
+$bg-tab-container: #151a24;
+$bg-tab-active: #333d52;
+
+$text-white: #ffffff;
+$text-gray: #828a99;
+$text-placeholder: #586175;
+
+$accent-purple: #9b8cf6;
+$accent-purple-hover: #8675eb;
+$divider-color: rgba(255, 255, 255, 0.08);
+
+.loginContainer {
+  min-height: 100vh;
+  background-color: $bg-main;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  font-family: "Inter", system-ui, sans-serif;
+  color: $text-white;
+}
+
+.header {
+  width: 100%;
+  padding: 32px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.logoGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+
+  .logoIcon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .logoText {
+    font-size: 20px;
+    font-weight: 700;
+    color: $text-white;
+    letter-spacing: -0.3px;
+  }
+}
+
+.backLink {
+  color: $text-gray;
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+
+  &:hover {
+    color: $text-white;
+  }
+}
+
+.mainContent {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 20px;
+  z-index: 10;
+}
+
+.glowBackground {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px;
+  height: 600px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0) 65%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.indigoGlow {
+  position: absolute;
+  top: 25%;
+  left: -80px;
+  width: 384px;
+  height: 384px;
+  background-color: rgba(192, 193, 255, 0.1);
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.warmGlow {
+  position: absolute;
+  bottom: 25%;
+  right: -80px;
+  width: 384px;
+  height: 384px;
+  background-color: rgba(255, 183, 131, 0.1);
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.loginBox {
+  width: 100%;
+  max-width: 440px;
+  background-color: $bg-card;
+  padding: 40px;
+  border-radius: 12px;
+  border: 1px solid $bg-card-border;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  .languagesContainer {
+    // border: 1px solid white;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: flex-end;
+    ul {
+      list-style: none;
+      display: flex;
+      column-gap: 20px;
+      li {
+        button {
+          color: white;
+          display: flex;
+          align-items: center;
+          column-gap: 10px;
+        }
+      }
+    }
+  }
+}
+
+.tabSwitcher {
+  display: flex;
+  background-color: $bg-tab-container;
+  padding: 4px;
+  border-radius: 8px;
+  margin-bottom: 32px;
+}
+
+.tabButton {
+  flex: 1;
+  padding: 10px 0;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: $text-gray;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+
+  &:hover:not(.activeTab) {
+    color: lighten($text-gray, 15%);
+  }
+
+  &.activeTab {
+    background-color: $bg-tab-active;
+    color: $text-white;
+  }
+}
+
+.textContainer {
+  margin-bottom: 24px;
+}
+
+.mainTitle {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.3px;
+}
+
+.subtitle {
+  color: $text-gray;
+  font-size: 13px;
+  margin: 0;
+}
+
+.socialButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+@keyframes rarityShimmer {
+  0% {
+    transform: translateX(-100%) rotate(25deg);
+  }
+  100% {
+    transform: translateX(200%) rotate(25deg);
+  }
+}
+
+.intraButton {
+  width: 100%;
+  position: relative;
+  background-color: $bg-input;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 14px 12px;
+  color: $text-white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s,
+    background-color 0.3s;
+  font-family: inherit;
+  overflow: hidden;
+
+  &:hover {
+    border-color: rgba($accent-purple, 0.4);
+    box-shadow:
+      0 0 20px rgba($accent-purple, 0.15),
+      0 0 40px rgba($accent-purple, 0.05),
+      inset 0 0 20px rgba($accent-purple, 0.03);
+
+    .intraShimmer {
+      opacity: 1;
+      animation: rarityShimmer 1.2s ease-in-out forwards;
+    }
+  }
+}
+
+.intraShimmer {
+  position: absolute;
+  top: -50%;
+  left: 0;
+  width: 60%;
+  height: 200%;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(192, 193, 255, 0.08) 20%,
+    rgba(155, 140, 246, 0.15) 35%,
+    rgba(255, 183, 131, 0.12) 50%,
+    rgba(155, 140, 246, 0.15) 65%,
+    rgba(192, 193, 255, 0.08) 80%,
+    transparent 100%
+  );
+  transform: translateX(-100%) rotate(25deg);
+  transition: opacity 0.3s;
+  z-index: 1;
+}
+
+.intraContent {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.socialRow {
+  display: flex;
+  gap: 12px;
+}
+
+.socialButton {
+  flex: 1;
+  position: relative;
+  padding: 12px;
+  background-color: $bg-input;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: $text-white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  overflow: hidden;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s,
+    background-color 0.3s;
+
+  &:hover {
+    border-color: rgba($accent-purple, 0.4);
+    box-shadow:
+      0 0 20px rgba($accent-purple, 0.15),
+      0 0 40px rgba($accent-purple, 0.05),
+      inset 0 0 20px rgba($accent-purple, 0.03);
+
+    .socialShimmer {
+      opacity: 1;
+      animation: rarityShimmer 1.2s ease-in-out forwards;
+    }
+  }
+}
+
+.socialShimmer {
+  position: absolute;
+  top: -50%;
+  left: 0;
+  width: 60%;
+  height: 200%;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(192, 193, 255, 0.08) 20%,
+    rgba(155, 140, 246, 0.15) 35%,
+    rgba(255, 183, 131, 0.12) 50%,
+    rgba(155, 140, 246, 0.15) 65%,
+    rgba(192, 193, 255, 0.08) 80%,
+    transparent 100%
+  );
+  transform: translateX(-100%) rotate(25deg);
+  transition: opacity 0.3s;
+  z-index: 1;
+}
+
+.socialContent {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+
+  .line {
+    flex-grow: 1;
+    height: 1px;
+    background-color: $divider-color;
+  }
+
+  span {
+    padding: 0 16px;
+    font-size: 11px;
+    font-weight: 600;
+    color: $text-placeholder;
+    letter-spacing: 0.5px;
+  }
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.labelRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inputLabel {
+  color: $text-gray;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.forgotLink {
+  color: $text-gray;
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.2s;
+
+  &:hover {
+    color: $text-white;
+  }
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: $bg-input;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid transparent;
+  transition: border-color 0.2s;
+
+  &:focus-within {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .leftIcon {
+    position: absolute;
+    left: 14px;
+    color: $text-placeholder;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  .rightIcon {
+    position: absolute;
+    right: 14px;
+    color: $text-placeholder;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: color 0.2s;
+
+    &:hover {
+      color: $text-gray;
+    }
+  }
+}
+
+.nativeInput {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: $text-white;
+  font-size: 14px;
+  padding: 14px 40px 14px 42px;
+  font-family: inherit;
+  outline: none;
+
+  &::placeholder {
+    color: $text-placeholder;
+  }
+}
+
+.nameRow {
+  display: flex;
+  gap: 12px;
+
+  > * {
+    flex: 1;
+  }
+}
+
+// ─── Password Strength Panel ─────────────────────────────
+.strengthPanel {
+  margin-top: 12px;
+  padding: 14px 16px;
+  background-color: rgba(21, 26, 36, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+}
+
+.strengthHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.strengthSegments {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+  margin-right: 12px;
+}
+
+.strengthSegment {
+  height: 4px;
+  flex: 1;
+  border-radius: 2px;
+  background-color: #1a1f2e;
+  transition: background-color 0.3s ease;
+}
+
+.segmentActive {
+  // color is set via inline style
+}
+
+.strengthLabel {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+  flex-shrink: 0;
+}
+
+.requirementsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.requirementItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: $text-placeholder;
+  transition: color 0.25s ease;
+}
+
+.requirementMet {
+  color: #22c55e;
+}
+
+.reqIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+
+  svg {
+    display: block;
+  }
+}
+
+.requirementMet .reqIcon {
+  transform: scale(1.1);
+}
+
+.errorText {
+  font-size: 11px;
+  color: #ef4444;
+  margin-top: 4px;
+  display: block;
+}
+
+.terms {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 11px;
+  color: $text-gray;
+  line-height: 1.6;
+
+  a {
+    color: $text-white;
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 255, 255, 0.2);
+    text-underline-offset: 3px;
+    margin-left: 3px;
+
+    &:hover {
+      text-decoration-color: $text-white;
+    }
+  }
+}
+
+// ─── Success Overlay ─────────────────────────────────────
+@keyframes checkmarkCircleDraw {
+  0% {
+    stroke-dashoffset: 151;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes checkmarkDraw {
+  0% {
+    stroke-dashoffset: 36;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes successFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleBounce {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  80% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes ringRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sparkle {
+  0% {
+    transform: translate(0, 0) scale(0);
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes progressFill {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.successOverlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  animation: successFadeUp 0.4s ease forwards;
+}
+
+.successCheckmark {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28px;
+  animation: scaleBounce 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  background: rgba(34, 197, 94, 0.06);
+}
+
+.gradientRing {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  padding: 3px;
+  background: conic-gradient(from 0deg, #22c55e, $accent-purple, #22c55e);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: ringRotate 3s linear infinite;
+}
+
+.sparkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  span {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22c55e;
+    top: 50%;
+    left: 50%;
+
+    &:nth-child(1) {
+      animation: sparkle 0.8s ease forwards 0.4s;
+      --tx: -28px;
+      --ty: -32px;
+    }
+    &:nth-child(2) {
+      animation: sparkle 0.8s ease forwards 0.5s;
+      --tx: 30px;
+      --ty: -26px;
+    }
+    &:nth-child(3) {
+      animation: sparkle 0.8s ease forwards 0.45s;
+      --tx: -34px;
+      --ty: 18px;
+    }
+    &:nth-child(4) {
+      animation: sparkle 0.8s ease forwards 0.55s;
+      --tx: 28px;
+      --ty: 24px;
+      background: $accent-purple;
+    }
+    &:nth-child(5) {
+      animation: sparkle 0.8s ease forwards 0.5s;
+      --tx: 0px;
+      --ty: -38px;
+      width: 4px;
+      height: 4px;
+      background: $accent-purple;
+    }
+    &:nth-child(6) {
+      animation: sparkle 0.8s ease forwards 0.6s;
+      --tx: -8px;
+      --ty: 36px;
+      width: 4px;
+      height: 4px;
+    }
+  }
+}
+
+// Override sparkle with actual translate using CSS custom properties
+.sparkles span {
+  @for $i from 1 through 6 {
+    &:nth-child(#{$i}) {
+      animation-name: sparkle-#{$i};
+    }
+  }
+}
+
+@keyframes sparkle-1 {
+  0% {
+    transform: translate(0, 0) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-28px, -32px) scale(1);
+    opacity: 0;
+  }
+}
+@keyframes sparkle-2 {
+  0% {
+    transform: translate(0, 0) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(30px, -26px) scale(1);
+    opacity: 0;
+  }
+}
+@keyframes sparkle-3 {
+  0% {
+    transform: translate(0, 0) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-34px, 18px) scale(1);
+    opacity: 0;
+  }
+}
+@keyframes sparkle-4 {
+  0% {
+    transform: translate(0, 0) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(28px, 24px) scale(1);
+    opacity: 0;
+  }
+}
+@keyframes sparkle-5 {
+  0% {
+    transform: translate(0, 0) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0px, -38px) scale(1);
+    opacity: 0;
+  }
+}
+@keyframes sparkle-6 {
+  0% {
+    transform: translate(0, 0) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-8px, 36px) scale(1);
+    opacity: 0;
+  }
+}
+
+.checkmarkSvg {
+  width: 48px;
+  height: 48px;
+  position: relative;
+  z-index: 2;
+}
+
+.checkmarkCircle {
+  stroke: #22c55e;
+  stroke-width: 2.5;
+  stroke-dasharray: 151;
+  stroke-dashoffset: 151;
+  animation: checkmarkCircleDraw 0.6s ease forwards 0.3s;
+}
+
+.checkmarkPath {
+  stroke: #22c55e;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 36;
+  stroke-dashoffset: 36;
+  animation: checkmarkDraw 0.4s ease forwards 0.7s;
+}
+
+.successTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: $text-white;
+  margin-bottom: 8px;
+  animation: successFadeUp 0.5s ease forwards 0.6s;
+  opacity: 0;
+  letter-spacing: -0.3px;
+}
+
+.successSubtitle {
+  font-size: 13px;
+  color: $text-gray;
+  animation: successFadeUp 0.5s ease forwards 0.8s;
+  opacity: 0;
+  margin-bottom: 28px;
+}
+
+.redirectBar {
+  width: 160px;
+  height: 3px;
+  border-radius: 2px;
+  background-color: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  animation: successFadeUp 0.4s ease forwards 1s;
+  opacity: 0;
+  margin-bottom: 12px;
+}
+
+.redirectProgress {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #22c55e, $accent-purple);
+  animation: progressFill 2.5s linear forwards;
+}
+
+.redirectLabel {
+  font-size: 11px;
+  color: $text-placeholder;
+  animation: successFadeUp 0.4s ease forwards 1s;
+  opacity: 0;
+}
+
+@keyframes formSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.formAnimate {
+  animation: formSlideIn 0.3s ease forwards;
+}
+
+// Tablet (≤ 600px): shrink card padding
+@media (max-width: 600px) {
+  .loginBox {
+    padding: 28px 20px;
+    border-radius: 8px;
+    margin: 0 12px;
+  }
+
+  .header {
+    padding: 20px 20px;
+  }
+
+  .mainTitle {
+    font-size: 18px;
+  }
+
+  // Stack First Name / Last Name vertically on mobile
+  .nameRow {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .nativeInput {
+    padding: 12px 36px 12px 38px;
+    font-size: 13px;
+  }
+}
+
+// Mobile (≤ 400px): minimal card, full width
+@media (max-width: 400px) {
+  .loginBox {
+    padding: 24px 16px;
+    margin: 0 8px;
+  }
+
+  .tabButton {
+    font-size: 12px;
+    padding: 8px 0;
+  }
+
+  .intraButton {
+    font-size: 12px;
+    padding: 10px;
+  }
+}
+
+.footer {
+  width: 100%;
+  text-align: center;
+  padding: 24px;
+  font-size: 11px;
+  color: rgba(130, 138, 153, 0.6);
+  z-index: 10;
+}

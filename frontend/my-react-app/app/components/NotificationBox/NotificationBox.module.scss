@@ -1,0 +1,60 @@
+.notificationsContainer {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  //   background-color: red;
+  //   border: 1px solid red;
+  z-index: 5;
+  width: 90%;
+  max-width: 500px;
+  //   height: 10px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+}
+
+.notificationContainer {
+  position: relative;
+  padding: 10px;
+
+  border-radius: 5px;
+  display: flex;
+  column-gap: 10px;
+  align-items: center;
+  width: 100%;
+  color: white;
+  button {
+    position: absolute;
+    right: 10px;
+    border: none;
+    background: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+  }
+}
+.notificationContainer:hover {
+  //   animation-play-state: paused;
+}
+
+.successNotification {
+  background-color: rgb(0, 157, 21);
+  transform: translateX(120%);
+  animation: slideIn 200ms ease-in-out forwards;
+  //   animation-delay: 1s;
+}
+.errorNotification {
+  background-color: rgb(157, 0, 0);
+  transform: translateX(120%);
+  animation: slideIn 200ms ease-in-out forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(120%);
+  }
+  to {
+    transform: translateX(0%);
+  }
+}

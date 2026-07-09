@@ -1,0 +1,530 @@
+.commentsSection {
+  width: 100%;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #ffffff;
+}
+
+.commentsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.headerTitleWrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.commentsTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.4px;
+  margin: 0;
+}
+
+.commentCount {
+  font-size: 12px;
+  font-weight: 700;
+  color: #a78bfa;
+  background: rgba(139, 92, 246, 0.14);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  padding: 3px 11px;
+  border-radius: 99px;
+  line-height: 1;
+}
+
+.composeContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 36px;
+}
+
+.composeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.userProfileGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.currentUserAvatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.35);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  letter-spacing: 0.5px;
+}
+
+.currentuserInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.currentUserName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f3f4f6;
+  line-height: 1.2;
+}
+
+.currentUserBadge {
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.composeCard {
+  background: #151a24;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  overflow: visible;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+
+.composeCard:focus-within {
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.12), 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.commentInput {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 14px;
+  font-family: inherit;
+  padding: 16px 18px;
+  outline: none;
+  resize: none;
+  min-height: 56px;
+  max-height: 160px;
+  line-height: 1.55;
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+}
+
+.commentInput::placeholder {
+  color: #64748b;
+}
+
+.composeToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: rgba(11, 19, 38, 0.45);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
+}
+
+.toolbarLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.emojiAnchor {
+  position: relative;
+}
+
+.emojiBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+}
+
+.emojiBtn:hover {
+  color: #facc15;
+  background: rgba(250, 204, 21, 0.08);
+  border-color: rgba(250, 204, 21, 0.2);
+}
+
+.emojiBtnLabel {
+  font-size: 13px;
+}
+
+.emojiPicker {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  background: #1a2035;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
+  z-index: 100;
+  animation: emojiSlideDown 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes emojiSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.emojiOption {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.15s, transform 0.15s;
+}
+
+.emojiOption:hover {
+  background: rgba(99, 102, 241, 0.18);
+  transform: scale(1.18);
+}
+
+/* Send Button Pill */
+.toolbarRight {
+  display: flex;
+  align-items: center;
+}
+
+.sendBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #64748b;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: not-allowed;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sendBtnActive {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+.sendBtnActive:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.55);
+}
+
+.sendBtnActive:active {
+  transform: translateY(0);
+}
+
+.commentsList {
+  display: flex;
+  flex-direction: column;
+}
+
+.commentItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
+  animation: commentFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.commentItem:last-child {
+  border-bottom: none;
+}
+
+@keyframes commentFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.commentDeleting {
+  opacity: 0 !important;
+  transform: scale(0.96) !important;
+  max-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+.commentAvatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #1c2236;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #a78bfa;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  letter-spacing: 0.5px;
+}
+
+.commentContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.commentHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.commentMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.commentAuthor {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.ownBadge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #a78bfa;
+  background: rgba(139, 92, 246, 0.15);
+  padding: 1px 7px;
+  border-radius: 6px;
+  border: 1px solid rgba(139, 92, 246, 0.25);
+}
+
+.commentDot {
+  color: #475569;
+  font-size: 12px;
+}
+
+.commentTime {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.deleteBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 8px;
+}
+
+.deleteBtn:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.commentText {
+  font-size: 14px;
+  color: #cbd5e1;
+  line-height: 1.6;
+  margin: 0;
+  word-break: break-word;
+}
+
+.commentNew {
+  background: rgba(99, 102, 241, 0.06);
+  border-radius: 12px;
+  padding: 16px 14px !important;
+  margin: 4px -14px;
+  border: 1px solid rgba(99, 102, 241, 0.18) !important;
+}
+
+.viewMoreBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px;
+  margin-top: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: #cbd5e1;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.viewMoreBtn:hover {
+  border-color: rgba(139, 92, 246, 0.4);
+  color: #ffffff;
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.viewMoreBtn svg {
+  transition: transform 0.2s ease;
+}
+
+.viewMoreBtn:hover svg {
+  transform: translateY(2px);
+}
+
+.emptyState {
+  text-align: center;
+  padding: 48px 20px;
+  background: rgba(21, 26, 36, 0.5);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+}
+
+.emptyIcon {
+  font-size: 36px;
+  margin-bottom: 12px;
+  opacity: 0.8;
+}
+
+.emptyText {
+  font-size: 15px;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin: 0 0 4px 0;
+}
+
+.emptySubtext {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.loadingState {
+  text-align: center;
+  padding: 40px 20px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.loadingDots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.loadingDots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #6366f1;
+  animation: dotPulse 1.2s ease-in-out infinite;
+}
+
+.loadingDots span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.loadingDots span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes dotPulse {
+  0%, 80%, 100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.errorState {
+  text-align: center;
+  padding: 32px 20px;
+  color: #ef4444;
+  font-size: 13px;
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  border-radius: 12px;
+}
+
+.errorState p {
+  margin: 0 0 12px 0;
+}
+
+.retryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  color: #ef4444;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.retryBtn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.5);
+}

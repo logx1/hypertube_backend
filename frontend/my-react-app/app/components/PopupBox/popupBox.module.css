@@ -1,0 +1,75 @@
+.popupContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.popupContainer .popupHolder {
+  width: 90%;
+  max-width: 500px;
+  background-color: var(--primaryBackgroundColor);
+  padding: 20px;
+  border-radius: 10px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  row-gap: 20px;
+  border: 1px solid #dddddd25;
+}
+
+.popupContainer .popupHolder div {
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.popupContainer .popupHolder .titleContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  row-gap: 10px;
+}
+
+.popupContainer .popupHolder .titleContainer .iconContainer {
+  width: 60px;
+  height: 60px;
+  background-color: rgba(0, 128, 0, 0.303);
+  border-radius: 50%;
+}
+
+.popupContainer .popupHolder .titleContainer .iconContainer svg {
+  color: white;
+}
+
+.popupContainer .popupHolder .titleContainer p {
+  font-size: 20px;
+}
+/*# sourceMappingURL=popupBox.module.css.map */

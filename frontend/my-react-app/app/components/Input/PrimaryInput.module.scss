@@ -1,0 +1,31 @@
+.primaryInputContainer {
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+  position: relative;
+
+  .primaryInput {
+    border: none;
+    padding: 15px 40px;
+    background-color: var(--outlinedColor);
+    border-radius: 5px;
+    font-size: 15px;
+    width: 100%;
+    // padding-left: 20px;
+  }
+  .icon {
+    display: flex;
+    align-items: center;
+    position: absolute;
+
+    svg {
+      color: #8c8b9c;
+    }
+  }
+  .leftIcon {
+    left: 10px;
+  }
+  .rightIcon {
+    right: 10px;
+  }
+}

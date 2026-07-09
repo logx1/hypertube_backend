@@ -1,0 +1,163 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+// @import "tailwindcss";
+
+// @theme {
+//   /* Deep Slate Base */
+//   --color-surface: #0b1326;
+
+//   /* Indigo Glow (Primary) */
+//   --color-primary: #c0c1ff;
+//   --color-primary-container: #8083ff;
+//   --color-on-primary-container: #0d0096;
+
+//   /* Warm Orange Glow (Tertiary) */
+//   --color-tertiary: #ffb783;
+// }
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primaryBackgroundColor: #0b1326;
+  --primaryColor: #6366f1;
+  --primaryFontFamily: "Inter";
+  --outlinedColor: #171f33;
+
+  --secondaryTextColor: #a0acc2;
+}
+
+html,
+body {
+  background-color: var(--primaryBackgroundColor);
+
+  .circle {
+    width: calc((200svh - 250px) / 2);
+
+    height: calc((200svh - 250px) / 2);
+    // border: 1px solid red;
+    // background-color: white;
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    border-radius: 50%;
+    background: radial-gradient(
+      rgba(255, 255, 255, 0.13),
+      var(--primaryBackgroundColor),
+      var(--primaryBackgroundColor) 100%
+    );
+  }
+
+  .appContainer {
+    // border: 1px solid blue;
+    display: grid;
+    grid-template-columns: 250px calc(100% - 250px);
+    // // z-index:;
+    .toHide {
+      display: none;
+    }
+  }
+
+  .contentContainer {
+    position: relative;
+    // border: 1px solid red;
+    // overflow: hidden;
+    // z-index: ;
+    // display: none;
+    // max-width: 2000px;
+    // margin: auto;
+    .contentWrapper {
+      position: relative;
+      padding: 30px;
+      z-index: 3;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    color-scheme: dark;
+  }
+}
+
+button {
+  // background: none;
+}
+
+::-webkit-scrollbar {
+  width: 12px; /* For vertical scrollbars */
+  height: 12px; /* For horizontal scrollbars */
+}
+
+/* 2. The track (background) of the scrollbar */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 6px; /* Optional: rounds the track */
+}
+
+/* 3. The thumb (the draggable part) */
+::-webkit-scrollbar-thumb {
+  background: var(--primaryColor);
+  border-radius: 6px; /* Optional: rounds the thumb */
+  border: 3px solid #f1f1f1; /* Creates a padding effect inside the track */
+}
+
+/* 4. The thumb when you hover over it */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primaryColor);
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  outline-color: var(--primaryColor);
+}
+
+input,
+p,
+a,
+h1,
+h2,
+h3,
+span,
+label {
+  font-family: var(--primaryFontFamily);
+  color: white;
+}
+
+@media screen and (max-width: 1487px) {
+  body {
+    .appContainer {
+      // border: 1px solid red;
+      grid-template-columns: 65px calc(100% - 65px);
+
+      .contentContainer {
+        // margin-left: 65px;
+      }
+      .toHide {
+        display: block;
+      }
+      .hideToHide {
+        display: none;
+      }
+      .contentContainerFull {
+        margin-left: unset;
+      }
+    }
+    .expandAppContainer {
+      grid-template-columns: 250px calc(100% - 310px);
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  body {
+    .appContainer {
+      // border: 1px solid red;
+      display: block;
+      // grid-template-columns: 1fr;
+    }
+  }
+}

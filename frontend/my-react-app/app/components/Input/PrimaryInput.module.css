@@ -1,0 +1,43 @@
+.primaryInputContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-column-gap: 10px;
+          column-gap: 10px;
+  position: relative;
+}
+
+.primaryInputContainer .primaryInput {
+  border: none;
+  padding: 15px 40px;
+  background-color: var(--outlinedColor);
+  border-radius: 5px;
+  font-size: 15px;
+  width: 100%;
+}
+
+.primaryInputContainer .icon {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  position: absolute;
+}
+
+.primaryInputContainer .icon svg {
+  color: #8c8b9c;
+}
+
+.primaryInputContainer .leftIcon {
+  left: 10px;
+}
+
+.primaryInputContainer .rightIcon {
+  right: 10px;
+}
+/*# sourceMappingURL=PrimaryInput.module.css.map */

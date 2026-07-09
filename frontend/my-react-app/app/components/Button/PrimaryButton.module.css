@@ -1,0 +1,57 @@
+.primaryButton {
+  outline-color: var(--primaryColor);
+  color: black;
+  border: none;
+  font-family: var(--primaryFontFamily);
+  font-weight: 600;
+  border-radius: 5px;
+  -webkit-transition: 100ms;
+  transition: 100ms;
+  background: #e0e0ff;
+  background: linear-gradient(170deg, #e0e0ff 0%, #c0c1ff 50%, #8689ff 100%);
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.primaryButton .loadingBox {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2.5px solid var(--primaryColor);
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  -webkit-animation: loading 400ms infinite linear;
+          animation: loading 400ms infinite linear;
+}
+
+.primaryButton:active {
+  -webkit-transform: scale(0.95);
+          transform: scale(0.95);
+}
+
+.primaryButton:active:disabled .loadingBox {
+  -webkit-animation: loading 100ms infinite linear;
+          animation: loading 100ms infinite linear;
+}
+
+@-webkit-keyframes loading {
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+
+@keyframes loading {
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+/*# sourceMappingURL=PrimaryButton.module.css.map */

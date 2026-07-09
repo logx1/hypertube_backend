@@ -1,0 +1,139 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+* {
+  padding: 0;
+  margin: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+:root {
+  --primaryBackgroundColor: #0b1326;
+  --primaryColor: #6366f1;
+  --primaryFontFamily: "Inter";
+  --outlinedColor: #171f33;
+  --secondaryTextColor: #a0acc2;
+}
+
+html,
+body {
+  background-color: var(--primaryBackgroundColor);
+}
+
+html .circle,
+body .circle {
+  width: calc((200svh - 250px) / 2);
+  height: calc((200svh - 250px) / 2);
+  position: fixed;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+          transform: translateY(-50%);
+  z-index: 1;
+  border-radius: 50%;
+  background: radial-gradient(rgba(255, 255, 255, 0.13), var(--primaryBackgroundColor), var(--primaryBackgroundColor) 100%);
+}
+
+html .appContainer,
+body .appContainer {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 250px calc(100% - 250px);
+      grid-template-columns: 250px calc(100% - 250px);
+}
+
+html .appContainer .toHide,
+body .appContainer .toHide {
+  display: none;
+}
+
+html .contentContainer,
+body .contentContainer {
+  position: relative;
+}
+
+html .contentContainer .contentWrapper,
+body .contentContainer .contentWrapper {
+  position: relative;
+  padding: 30px;
+  z-index: 3;
+}
+
+@media (prefers-color-scheme: dark) {
+  html,
+  body {
+    color-scheme: dark;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  /* For vertical scrollbars */
+  height: 12px;
+  /* For horizontal scrollbars */
+}
+
+/* 2. The track (background) of the scrollbar */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 6px;
+  /* Optional: rounds the track */
+}
+
+/* 3. The thumb (the draggable part) */
+::-webkit-scrollbar-thumb {
+  background: var(--primaryColor);
+  border-radius: 6px;
+  /* Optional: rounds the thumb */
+  border: 3px solid #f1f1f1;
+  /* Creates a padding effect inside the track */
+}
+
+/* 4. The thumb when you hover over it */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primaryColor);
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  outline-color: var(--primaryColor);
+}
+
+input,
+p,
+a,
+h1,
+h2,
+h3,
+span,
+label {
+  font-family: var(--primaryFontFamily);
+  color: white;
+}
+
+@media screen and (max-width: 1487px) {
+  body .appContainer {
+    -ms-grid-columns: 65px calc(100% - 65px);
+        grid-template-columns: 65px calc(100% - 65px);
+  }
+  body .appContainer .toHide {
+    display: block;
+  }
+  body .appContainer .hideToHide {
+    display: none;
+  }
+  body .appContainer .contentContainerFull {
+    margin-left: unset;
+  }
+  body .expandAppContainer {
+    -ms-grid-columns: 250px calc(100% - 310px);
+        grid-template-columns: 250px calc(100% - 310px);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  body .appContainer {
+    display: block;
+  }
+}
+/*# sourceMappingURL=app.css.map */

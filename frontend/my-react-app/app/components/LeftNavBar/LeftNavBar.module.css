@@ -1,0 +1,115 @@
+.leftNavBar {
+  background-color: var(--primaryBackgroundColor);
+  height: calc(100svh - 85px);
+  top: 85px;
+  position: -webkit-sticky;
+  position: sticky;
+  z-index: 2;
+  border-right: 1px solid var(--primaryColor);
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.leftNavBar ul {
+  padding-top: 20px;
+}
+
+.leftNavBar ul li {
+  padding: 0px 10px;
+}
+
+.leftNavBar ul li a,
+.leftNavBar ul li button {
+  text-decoration: none;
+  text-transform: capitalize;
+  padding: 10px 20px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-column-gap: 20px;
+          column-gap: 20px;
+  border-radius: 5px;
+  -webkit-transition: 80ms linear;
+  transition: 80ms linear;
+  color: white;
+}
+
+.leftNavBar ul li a:hover,
+.leftNavBar ul li button:hover {
+  background-color: #6365f12c;
+  color: var(--primaryColor);
+}
+
+.leftNavBar ul li button {
+  font-family: var(--primaryFontFamily);
+  width: 100%;
+  font-size: 15px;
+}
+
+@media screen and (max-width: 1487px) {
+  .leftNavBar {
+    width: 65px;
+    overflow-x: hidden;
+    -webkit-transition: 100ms ease-out;
+    transition: 100ms ease-out;
+    position: fixed;
+    z-index: 4;
+  }
+  .leftNavBar ul {
+    width: 200px;
+  }
+  .leftNavBar ul li {
+    padding-left: 0;
+  }
+  .leftNavBar ul li a {
+    padding-left: 20px;
+  }
+  .leftNavBar:hover {
+    width: 250px;
+  }
+  .leftNavBar:hover ul {
+    width: 250px;
+  }
+  .leftNavBar:hover ul li {
+    padding: 0px 10px;
+  }
+  .leftNavBar:hover ul li a {
+    padding-left: 10px;
+  }
+  .expandLeftNavBar {
+    position: fixed;
+    width: 250px;
+  }
+  .expandLeftNavBar ul {
+    width: 250px;
+  }
+  .expandLeftNavBar ul li {
+    padding: 0px 10px;
+  }
+  .expandLeftNavBar ul li a {
+    padding-left: 10px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .leftNavBar {
+    width: 250px;
+    -webkit-transform: translateX(-100%);
+            transform: translateX(-100%);
+  }
+  .expandLeftNavBar {
+    -webkit-transform: translateX(0);
+            transform: translateX(0);
+    top: 70px;
+    height: calc(100% - 70px);
+  }
+}
+/*# sourceMappingURL=LeftNavBar.module.css.map */

@@ -1,0 +1,204 @@
+.infosDisplayer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100svh;
+  width: 100svw;
+  background-color: rgba(0, 0, 0, 0.507);
+  z-index: 2;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.infosDisplayer .contentDisplayer {
+  background-color: white;
+  border-radius: 10px;
+  padding: 30px;
+  width: 90%;
+  max-width: 800px;
+}
+
+.infosDisplayer .contentDisplayer .title {
+  color: black;
+  font-family: var(--primaryFontFamily);
+  text-align: center;
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.infosDisplayer .contentDisplayer .interfaceDescription {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  row-gap: 10px;
+}
+
+.infosDisplayer .contentDisplayer .interfaceDescription p {
+  color: black;
+  text-align: center;
+}
+
+.infosDisplayer .contentDisplayer .interfaceDescription .interfaceDescriptionWrapper {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
+  padding: 10px;
+  row-gap: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.infosDisplayer .contentDisplayer .interfaceDescription .interfaceDescriptionWrapper p {
+  text-align: start;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+}
+
+.infosDisplayer .contentDisplayer .previewContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.infosDisplayer .contentDisplayer .contentInfos {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  row-gap: 10px;
+}
+
+.infosDisplayer .contentDisplayer .contentInfos .contentHolder {
+  border-bottom: 1px solid #ddd;
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
+  -webkit-column-gap: 10px;
+          column-gap: 10px;
+}
+
+.infosDisplayer .contentDisplayer .contentInfos .contentHolder .infosNameContainer {
+  padding: 10px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.infosDisplayer .contentDisplayer .contentInfos .contentHolder .infosNameContainer p,
+.infosDisplayer .contentDisplayer .contentInfos .contentHolder .infosNameContainer span,
+.infosDisplayer .contentDisplayer .contentInfos .contentHolder .infosNameContainer code {
+  color: black;
+}
+
+.infosDisplayer .contentDisplayer .contentInfos .contentHolder .infosNameHolder {
+  padding: 10px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.infosDisplayer .contentDisplayer .contentInfos .contentHolder .infosNameHolder p,
+.infosDisplayer .contentDisplayer .contentInfos .contentHolder .infosNameHolder span,
+.infosDisplayer .contentDisplayer .contentInfos .contentHolder .infosNameHolder code {
+  color: black;
+  cursor: pointer;
+}
+
+.infosDisplayer .contentDisplayer .contentInfos .previewContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  row-gap: 10px;
+}
+
+.infosDisplayer .contentDisplayer .contentInfos .previewContainer p {
+  color: black;
+}
+
+.infosContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  padding: 30px;
+  -webkit-column-gap: 20px;
+          column-gap: 20px;
+  row-gap: 20px;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.infosContainer .compContainer {
+  width: 500px;
+  height: 500px;
+  border: 1px solid var(--primaryColor);
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  position: relative;
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 10px;
+  overflow: hidden;
+}
+
+.infosContainer .compContainer .componentName {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+  font-family: var(--primaryFontFamily);
+  font-size: 20px;
+}
+/*# sourceMappingURL=infos.module.css.map */

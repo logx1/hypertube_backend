@@ -12,7 +12,16 @@ services:
       - movies
       - rails
 
-
+  front_end:
+    container_name: hypertube_fromtend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend/my-react-app:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
 
   movies:
     container_name: backend
@@ -31,14 +40,11 @@ services:
       - DB_MOVIES_BACKEND_PASSWORD=${DB_MOVIES_BACKEND_PASSWORD}
     depends_on:
       - rails
-  
-
-
 
   rails:
     build: ./auth
     # ports:
-      # - "8001:8001"
+    # - "8001:8001"
     volumes:
       - ./auth:/app
     environment:
@@ -63,7 +69,7 @@ services:
       - DB_MOVIES_BACKEND_PASSWORD=${DB_MOVIES_BACKEND_PASSWORD}
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
-  
+
   minio:
     image: minio/minio:latest
     container_name: minio
@@ -72,7 +78,7 @@ services:
       - "9000:9000" # API port
       - "9001:9001" # Console (Dashboard) port
     environment:
-      MINIO_ROOT_USER: "your-access-key"      # Change this!
+      MINIO_ROOT_USER: "your-access-key" # Change this!
       MINIO_ROOT_PASSWORD: "your-secret-password" # Change this!
     volumes:
       - minio_data:/data

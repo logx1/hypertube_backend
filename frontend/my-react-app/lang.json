@@ -1,0 +1,100 @@
+{
+  "en": {
+    "homePage": {
+      "home": "Home",
+      "profile": "Profile",
+      "languages": "Languages",
+      "logout": "Log out",
+      "browse": "Browse",
+      "alsoPopular": "Also Popular",
+      "searchBar": "Search"
+    },
+    "editProfile": {
+      "title": "Account settings",
+      "desc": "Manage your profile information and security preference",
+      "boxTitle": "Personal Informations",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "username": "Username",
+      "submit": "Submit Changes",
+      "successTitle": "Success",
+      "successDescription": "Infos updated successfully",
+      "errorTitle": "Failed",
+      "errorDesc": "Something went wrong",
+      "editEmail": "Change email address",
+      "email": "Email address",
+      "password": "Password",
+      "confirmPassword": "Confirm Password"
+    },
+    "movieInfos": {
+      "actors": "Actors",
+      "torrentResult": "Torrent results"
+    },
+    "signIn": {
+      "signInButton": "Sign In",
+      "signUpButton": "Sign Up",
+      "signInTitle": "Welcome Back",
+      "signInDesc": "Enter your credentials to access your library",
+      "continueWithIntra": "Continue with Intra",
+      "orUsername": "OR USERNAME",
+      "username": "USERNAME",
+      "password": "PASSWORD",
+      "policyMsg": "By continuing, you agree to our Terms of Service and Privacy Policy.",
+      "forgot": "Forgot?",
+      "rights": "© 2026 HyperTube Inc. All rights reserved. Cinematic Experience Engineered.",
+      "createAccount": "Create Account",
+      "join": "Join HyperTube and start your journey",
+      "firstName": "First Name",
+      "lastName": "Last Name"
+    }
+  },
+  "fr": {
+    "homePage": {
+      "home": "Maison",
+      "profile": "Profil",
+      "languages": "Langues",
+      "logout": "Déconnexion",
+      "browse": "Explorer",
+      "alsoPopular": "Également populaire",
+      "searchBar": "Recherche"
+    },
+    "editProfile": {
+      "title": "Paramètres du compte",
+      "desc": "Gérez les informations de votre profil et vos préférences de sécurité",
+      "boxTitle": "Informations personnelles",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "username": "nom d'utilisateur",
+      "submit": "Soumettre les modifications",
+      "successTitle": "Succès",
+      "successDescription": "Informations mises à jour avec succès",
+      "errorTitle": "Échoué",
+      "errorDesc": "Quelque chose s'est mal passé",
+      "editEmail": "Changer l'adresse e-mail",
+      "email": "Email address",
+      "password": "Password",
+      "confirmPassword": "Confirm Password"
+    },
+    "movieInfos": {
+      "actors": "Acteurs",
+      "torrentResult": "Résultats Torrent"
+    },
+    "signIn": {
+      "signInButton": "Se connecter",
+      "signUpButton": "S'inscrire",
+      "signInTitle": "Content de te revoir",
+      "signInDesc": "Saisissez vos identifiants pour accéder à votre bibliothèque",
+      "continueWithIntra": "Continuez avec Intra",
+      "orUsername": "OU NOM D'UTILISATEUR",
+      "username": "NOM D'UTILISATEUR",
+      "password": "MOT DE PASSE",
+      "policyMsg": "En continuant, vous acceptez nos Conditions d'utilisation et notre Politique de confidentialité.",
+      "forgot": "Oubliée?",
+      "rights": "© 2026 HyperTube Inc. Tous droits réservés. Expérience cinématographique conçue.",
+      "createAccount": "Créer un compte",
+      "join": "Rejoignez HyperTube et commencez votre voyage",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille"
+    }
+  }
+}

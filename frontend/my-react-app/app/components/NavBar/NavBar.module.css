@@ -1,0 +1,279 @@
+.navBar {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  padding: 20px 30px;
+  background-color: var(--primaryBackgroundColor);
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  z-index: 4;
+  border-bottom: 1px solid var(--primaryColor);
+}
+
+.navBar .leftSide {
+  width: 33%;
+  letter-spacing: 1px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-column-gap: 30px;
+          column-gap: 30px;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.navBar .leftSide button {
+  background: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  border: none;
+  color: var(--primaryColor);
+  display: none;
+}
+
+.navBar .leftSide p {
+  font-size: 25px;
+  font-weight: 800;
+  color: #6366f1;
+}
+
+.navBar .leftSide .navigationList {
+  list-style: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-column-gap: 20px;
+          column-gap: 20px;
+}
+
+.navBar .leftSide .navigationList li a {
+  color: #545f73;
+  text-decoration: none;
+  position: relative;
+  -webkit-transition: color 100ms linear;
+  transition: color 100ms linear;
+}
+
+.navBar .leftSide .navigationList li a:hover {
+  color: var(--primaryColor);
+}
+
+.navBar .leftSide .navigationList li a::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 100%;
+  height: 2px;
+  bottom: -5px;
+  background-color: #6366f1;
+}
+
+.navBar .leftSide .navigationList li a:hover::before {
+  color: var(--primaryColor);
+  -webkit-animation: expandWidth 100ms linear forwards;
+          animation: expandWidth 100ms linear forwards;
+}
+
+.navBar .leftSide .navigationList li .selectedTab {
+  color: var(--primaryColor);
+}
+
+.navBar .leftSide .navigationList li .selectedTab::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  bottom: -5px;
+  background-color: #6366f1;
+}
+
+.navBar .center {
+  width: 33%;
+  position: relative;
+}
+
+.navBar .center .searchForMoviesBtn {
+  width: 100%;
+  background-color: var(--outlinedColor);
+  text-align: start;
+  padding: 10px 20px;
+  padding-left: 15px;
+  color: white;
+  border-radius: 10px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-column-gap: 10px;
+          column-gap: 10px;
+}
+
+.navBar .center .searchForMoviesBtn .buttonTxt {
+  font-size: 15px;
+  color: var(--secondaryTextColor);
+}
+
+.navBar .center .searchForMoviesBtn span {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.navBar .center input {
+  border-radius: 15px;
+}
+
+.navBar .center .searchResultContainer {
+  position: absolute;
+  top: 101%;
+  border: 1px solid var(--primaryColor);
+  border-radius: 10px;
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  padding: 10px;
+  background-color: var(--primaryBackgroundColor);
+}
+
+.navBar .center .searchResultContainer ul {
+  list-style: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.navBar .center .searchResultContainer ul li a {
+  text-decoration: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  padding: 10px;
+}
+
+.navBar .center .searchResultContainer ul li a:hover {
+  background-color: #6365f12c;
+}
+
+.navBar .rightSide {
+  width: 33%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+}
+
+.navBar .rightSide .navBarImg {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+@-webkit-keyframes expandWidth {
+  from {
+    right: 100%;
+  }
+  to {
+    right: 0;
+  }
+}
+
+@keyframes expandWidth {
+  from {
+    right: 100%;
+  }
+  to {
+    right: 0;
+  }
+}
+
+@media screen and (max-width: 1487px) {
+  .navBar {
+    display: -ms-grid;
+    display: grid;
+    -ms-grid-columns: 1fr 1fr 100px;
+        grid-template-columns: 1fr 1fr 100px;
+  }
+  .navBar .leftSide {
+    width: 100%;
+  }
+  .navBar .leftSide button {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+  }
+  .navBar .center {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: end;
+        -ms-flex-pack: end;
+            justify-content: flex-end;
+    width: 100%;
+  }
+  .navBar .rightSide {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 1487px) {
+  .navBar {
+    padding: 20px;
+  }
+}
+
+@media screen and (max-width: 1110px) {
+  .navBar .center .searchForMoviesBtn {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 605px) {
+  .navBar .leftSide .navigationList {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 351px) {
+  .navBar .rightSide {
+    display: none;
+  }
+}
+/*# sourceMappingURL=NavBar.module.css.map */

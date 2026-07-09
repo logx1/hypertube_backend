@@ -1,0 +1,236 @@
+.moviesInfoContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  row-gap: 20px;
+}
+
+.moviesInfoContainer .movieCover {
+  width: 100%;
+  aspect-ratio: 3 / 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.moviesInfoContainer .movieCover img {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  -o-object-position: center;
+     object-position: center;
+}
+
+.moviesInfoContainer .watchedInfo {
+  color: var(--primaryColor);
+  font-weight: bold;
+}
+
+.moviesInfoContainer .titleContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.moviesInfoContainer .titleContainer h1 {
+  font-size: 40px;
+  font-weight: 800;
+}
+
+.moviesInfoContainer .titleContainer h1 .releaseDate {
+  font-size: 15px;
+  color: var(--primaryColor);
+  margin-left: 20px;
+}
+
+.moviesInfoContainer .titleContainer .genresContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-column-gap: 10px;
+          column-gap: 10px;
+}
+
+.moviesInfoContainer .titleContainer .genresContainer span {
+  background-color: var(--primaryColor);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.moviesInfoContainer .actorsTitle {
+  font-size: 35px;
+  font-weight: 600;
+}
+
+.moviesInfoContainer .actorsContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-column-gap: 50px;
+          column-gap: 50px;
+  row-gap: 50px;
+}
+
+.moviesInfoContainer .actorsContainer .actorContainer {
+  width: 300px;
+  border: 1px solid var(--primaryColor);
+  border-radius: 10px;
+  padding: 20px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  row-gap: 10px;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.moviesInfoContainer .actorsContainer .actorContainer img {
+  width: 100%;
+  aspect-ratio: 2/2;
+  -o-object-fit: cover;
+     object-fit: cover;
+  border-radius: 50%;
+}
+
+.moviesInfoContainer .torrentResultBox {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  row-gap: 10px;
+}
+
+.moviesInfoContainer .torrentResultBox .resultTableHeader {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 200px (calc(calc(100% - 100px) / 4))[5];
+      grid-template-columns: 200px repeat(5, calc(calc(100% - 100px) / 4));
+  -webkit-column-gap: 10px;
+          column-gap: 10px;
+  width: 100%;
+  background-color: #171f33;
+  padding: 10px 15px;
+  border-radius: 5px;
+}
+
+.moviesInfoContainer .torrentResultBox .resultTableContent {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 200px (calc(calc(100% - 100px) / 4))[5];
+      grid-template-columns: 200px repeat(5, calc(calc(100% - 100px) / 4));
+  width: 100%;
+  background-color: #171f33;
+  -webkit-column-gap: 10px;
+          column-gap: 10px;
+  padding: 10px 15px;
+}
+
+.moviesInfoContainer .torrentResultBox .resultTableContent div {
+  border: 1px solid blue;
+}
+
+.moviesInfoContainer .torrentResultBox .resultTableContent span {
+  border: 1px solid blue;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+}
+
+.moviesInfoContainer .torrentResultCards {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-column-gap: 20px;
+          column-gap: 20px;
+  row-gap: 20px;
+  position: relative;
+}
+
+.moviesInfoContainer .torrentResultCards .movieHolder {
+  cursor: pointer;
+  -webkit-box-shadow: rgba(86, 86, 86, 0.35) 0px 5px 15px;
+          box-shadow: rgba(86, 86, 86, 0.35) 0px 5px 15px;
+  border: 1px solid var(--primaryColor);
+  width: 300px;
+  border-radius: 10px;
+  padding: 10px;
+  -webkit-transition: 200ms linear;
+  transition: 200ms linear;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  row-gap: 10px;
+  text-decoration: none;
+}
+
+.moviesInfoContainer .torrentResultCards .movieHolder img {
+  width: 100%;
+  border-radius: 5px;
+  height: 400px;
+}
+
+.moviesInfoContainer .torrentResultCards .movieHolder .descriptionContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  row-gap: 10px;
+}
+
+.moviesInfoContainer .torrentResultCards .movieHolder .descriptionContainer .movieName {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.moviesInfoContainer .torrentResultCards .noTorrentResult {
+  border: 1px solid rgba(255, 162, 0, 0.363);
+  width: 90%;
+  max-width: 500px;
+}
+
+.moviesInfoContainer .torrentResultCards .cardHolder {
+  width: 400px;
+  border: 1px solid var(--primaryColor);
+  border-radius: 10px;
+}
+/*# sourceMappingURL=movieInfos.module.css.map */
