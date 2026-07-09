@@ -20,3 +20,11 @@ class Movie(models.Model):
 #     identifier = models.CharField(max_length=250)
 #     path = models.CharField(max_length=355)
 #     torrent_url = models.CharField(max_length=455)
+    
+#user_name comment movie_id
+
+class comments(models.Model):
+    comment_id = models.CharField(max_length=100, unique=True, primary_key=True)
+    movie_id = models.CharField(max_length=250)
+    comments = models.CharField(max_length=455)
+    user_name = models.CharField(max_length=250)
