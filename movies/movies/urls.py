@@ -16,10 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+# movie_detail
+from stream.views import movie_details,delete_movie_by_identifier
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('search/', include('search.urls'), name='search'),
     path('stream/', include('stream.urls'), name='stream'),
+    path("movies", movie_details, name="get_movie_by_id"),
+    path("movies/delete", delete_movie_by_identifier, name="delete_movie_by_identifier")
 ]
