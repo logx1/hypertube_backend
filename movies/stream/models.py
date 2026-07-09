@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 
 # Create your models here.
 
@@ -24,7 +25,13 @@ class Movie(models.Model):
 #user_name comment movie_id
 
 class comments(models.Model):
-    comment_id = models.CharField(max_length=100, unique=True, primary_key=True)
+    # This will automatically generate a unique 36-character string ID
+    comment_id = models.CharField(
+        max_length=100, 
+        primary_key=True, 
+        default=uuid.uuid4, 
+        editable=False
+    )
     movie_id = models.CharField(max_length=250)
     comments = models.CharField(max_length=455)
     user_name = models.CharField(max_length=250)
