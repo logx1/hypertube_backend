@@ -186,7 +186,7 @@ end
         name = auth.info.name.split()
         user = User.new(
           username: generate_username, 
-          last_name: name[1], 
+          last_name: 'guest', 
           first_name: name[0], 
           email: auth.info.email, 
           password: SecureRandom.hex(8),
