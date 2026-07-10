@@ -97,7 +97,7 @@ const CommentsSection = ({ identifier }: CommentsSectionProps) => {
         }
 
         const res = await fetch(
-          `${API_BASE}/stream/comments?identifier="${identifier}"&page=${page}`,
+          `${API_BASE}/api/stream/comments?identifier="${identifier}"&page=${page}`,
           {
             method: "GET",
             headers: {
@@ -178,7 +178,7 @@ const CommentsSection = ({ identifier }: CommentsSectionProps) => {
     setIsSending(true);
     try {
       const res = await fetch(
-        `${API_BASE}/stream/comments?identifier="${identifier}"&page=1`,
+        `${API_BASE}/api/stream/comments?identifier="${identifier}"&page=1`,
         {
           method: "POST",
           headers: {
@@ -304,7 +304,9 @@ const CommentsSection = ({ identifier }: CommentsSectionProps) => {
 
             <div className={styles.toolbarRight}>
               <button
-                className={`${styles.sendBtn} ${canSend ? styles.sendBtnActive : ""}`}
+                className={`${styles.sendBtn} ${
+                  canSend ? styles.sendBtnActive : ""
+                }`}
                 onClick={handleSend}
                 disabled={!canSend}
                 aria-label="Send comment"
@@ -407,7 +409,12 @@ const CommentsSection = ({ identifier }: CommentsSectionProps) => {
               <span>
                 {isLoadingMore
                   ? "Loading..."
-                  : `View ${Math.max(0, totalItems - comments.length)} more comment${Math.max(0, totalItems - comments.length) > 1 ? "s" : ""}`}
+                  : `View ${Math.max(
+                      0,
+                      totalItems - comments.length
+                    )} more comment${
+                      Math.max(0, totalItems - comments.length) > 1 ? "s" : ""
+                    }`}
               </span>
               <svg
                 width="15"

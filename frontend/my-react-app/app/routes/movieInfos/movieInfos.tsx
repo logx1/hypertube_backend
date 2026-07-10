@@ -20,7 +20,9 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   }
 
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/search/movie_detail?id=${params.movieId}`,
+    `${import.meta.env.VITE_BACKEND_URL}/api/search/movie_detail?id=${
+      params.movieId
+    }`,
     {
       method: "GET",
       headers: {
@@ -88,7 +90,9 @@ export default function movieInfos({ loaderData }: Route.ComponentProps) {
       return;
     }
     fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/stream/torrent_search?title="${movieName}"`,
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/api/stream/torrent_search?title="${movieName}"`,
       {
         method: "GET",
         headers: {
@@ -124,7 +128,7 @@ export default function movieInfos({ loaderData }: Route.ComponentProps) {
       console.log("No accessToken");
       return;
     }
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/stream/downloadx`, {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/stream/downloadx`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

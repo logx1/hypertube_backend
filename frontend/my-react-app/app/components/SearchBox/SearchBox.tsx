@@ -49,7 +49,9 @@ export default function SearchBox({
     setSearchResult([]);
     setIsSearchLoading(true);
     fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/search/?q="${e.currentTarget.value}"`,
+      `${import.meta.env.VITE_BACKEND_URL}/api/search/?q="${
+        e.currentTarget.value
+      }"`,
       {
         headers: {
           Authorization: `Bearer ${authToken}`,

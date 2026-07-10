@@ -174,7 +174,7 @@ const NavBar = ({
 
       <div className={styles.rightSide}>
         <img
-          src="http://localhost:3000/public/ff.avif"
+          src="https://localhost/public/ff.avif"
           className={styles.navBarImg}
         />
       </div>

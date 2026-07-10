@@ -72,7 +72,7 @@ export default function Home() {
       return;
     }
 
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/search/popular`, {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/search/popular`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${authToken}`,

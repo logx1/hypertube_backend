@@ -82,7 +82,9 @@ const Watch = () => {
         return;
       }
       fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/stream/download_status?identifier="${identifier}"`,
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/stream/download_status?identifier="${identifier}"`,
         {
           method: "GET",
           headers: {
@@ -129,7 +131,9 @@ const Watch = () => {
   useEffect(() => {
     const accessToken = getCookie(document.cookie, "token");
     fetch(
-      `${import.meta.env.VITE_BACKEND_URL}//stream/download_status?identifier=${identifier144}`,
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/api/stream/download_status?identifier=${identifier144}`,
       {
         method: "GET",
         headers: {
@@ -196,7 +200,9 @@ const Watch = () => {
               <h2>{name}</h2>
               <br />
               <VideoBox
-                url={`https://localhost/stream/watch?identifier=${quality === "144" ? identifier144 : identifier}`}
+                url={`https://localhost/stream/watch?identifier=${
+                  quality === "144" ? identifier144 : identifier
+                }`}
               />
               <br />
               <br />
