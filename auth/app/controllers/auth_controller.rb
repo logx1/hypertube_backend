@@ -10,8 +10,9 @@ class AuthController < ApplicationController
         token = JsonWebToken.encode(user_id: user.id, email: user.email, username: user.username)
         cookies["token"] = {
           value: token,
-          secure: true,
-          httponly: true,
+          httponly: false,
+          same_site: :none,
+          secure: true
         }
         render json: { Success: "User Authentified!", token: token }
       else
